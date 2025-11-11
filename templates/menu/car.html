@@ -1,0 +1,25 @@
+{% extends "menu/base_menu.html" %}
+
+{% block title %}Car{% endblock %}
+{% block menu_title %}🚗 Car{% endblock %}
+
+{% block content %}
+<div class="menu-section">
+    <h3 class="section-title">Car Information</h3>
+    <div class="info-box">
+        <p><strong>Model:</strong> Unknown</p>
+        <p><strong>Health:</strong> 100%</p>
+        <p><strong>Fuel:</strong> 75%</p>
+    </div>
+</div>
+
+<div class="menu-section">
+    <h3 class="section-title">Upgrades</h3>
+    <div class="info-box">
+        <button class="menu-button">Engine</button>
+        <button class="menu-button">Armor</button>
+        <button class="menu-button">Weapons</button>
+        <button class="menu-button">Accessories</button>
+    </div>
+</div>
+{% endblock %}

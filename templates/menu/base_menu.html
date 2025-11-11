@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Menu{% endblock %} - Road Dogs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: rgba(0, 0, 0, 0.95);
+            color: #ffffff;
+        }
+
+        .menu-window {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            background-color: #2a2a2a;
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+        }
+
+        .menu-header {
+            background-color: #1a1a1a;
+            padding: 15px 20px;
+            border-bottom: 2px solid #ff6b00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .menu-title {
+            font-size: 20px;
+            color: #ff6b00;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: 2px solid #666;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            border-color: #ff3333;
+            color: #ff3333;
+        }
+
+        .menu-content {
+            padding: 20px;
+        }
+
+        .menu-section {
+            margin: 20px 0;
+        }
+
+        .section-title {
+            color: #ff6b00;
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #444;
+        }
+
+        .menu-button {
+            background-color: #444;
+            border: 2px solid #666;
+            color: #fff;
+            padding: 12px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .menu-button:hover {
+            background-color: #ff6b00;
+            border-color: #ff6b00;
+        }
+
+        .info-box {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        {% block extra_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <div class="menu-window">
+        <div class="menu-header">
+            <div class="menu-title">{% block menu_title %}Menu{% endblock %}</div>
+            <button class="close-btn" onclick="window.close()">×</button>
+        </div>
+        <div class="menu-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

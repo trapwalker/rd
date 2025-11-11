@@ -1,0 +1,40 @@
+{% extends "menu/base_menu.html" %}
+
+{% block title %}Character{% endblock %}
+{% block menu_title %}🎭 Character{% endblock %}
+
+{% block content %}
+<div class="menu-section">
+    <h3 class="section-title">Character Info</h3>
+    <div class="info-box">
+        {% if user %}
+        <p><strong>Name:</strong> {{ user.display_name or user.username }}</p>
+        <p><strong>Level:</strong> {{ user.level }}</p>
+        <p><strong>Experience:</strong> {{ user.experience }} XP</p>
+        <p><strong>Class:</strong> {{ user.role_class_uri.split('/')[-1] if user.role_class_uri else 'Unknown' }}</p>
+        {% else %}
+        <p>Not authenticated</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="menu-section">
+    <h3 class="section-title">Skills</h3>
+    <div class="info-box">
+        <p>🚗 Driving: --/100</p>
+        <p>🎯 Shooting: --/100</p>
+        <p>🥷 Masking: --/100</p>
+        <p>🔧 Engineering: --/100</p>
+        <p>💰 Trading: --/100</p>
+        <p>👥 Leading: --/100</p>
+        <p style="color: #999; margin-top: 10px; font-size: 12px;">
+            Skills will be loaded from agent data
+        </p>
+    </div>
+</div>
+
+<div class="menu-section">
+    <button class="menu-button">View Achievements</button>
+    <button class="menu-button">Character History</button>
+</div>
+{% endblock %}

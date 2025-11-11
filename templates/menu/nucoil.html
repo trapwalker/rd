@@ -1,0 +1,20 @@
+{% extends "menu/base_menu.html" %}
+
+{% block title %}Nucoil{% endblock %}
+{% block menu_title %}⚡ Nucoil Energy{% endblock %}
+
+{% block content %}
+<div class="menu-section">
+    <h3 class="section-title">Energy Status</h3>
+    <div class="info-box">
+        <p><strong>Current Charge:</strong> 85%</p>
+        <p><strong>Max Capacity:</strong> 100 units</p>
+        <p><strong>Recharge Rate:</strong> 5 units/min</p>
+    </div>
+</div>
+
+<div class="menu-section">
+    <button class="menu-button">Recharge Now</button>
+    <button class="menu-button">Upgrade Capacity</button>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "menu/base_menu.html" %}
+
+{% block title %}Party{% endblock %}
+{% block menu_title %}👥 Party{% endblock %}
+
+{% block content %}
+<div class="menu-section">
+    <h3 class="section-title">Party Members</h3>
+    <div class="info-box">
+        <p style="color: #999;">No party members</p>
+    </div>
+</div>
+
+<div class="menu-section">
+    <h3 class="section-title">Invitations</h3>
+    <div class="info-box">
+        <p style="color: #999;">No pending invitations</p>
+    </div>
+</div>
+
+<div class="menu-section">
+    <button class="menu-button">Create Party</button>
+    <button class="menu-button">Find Players</button>
+</div>
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "menu/base_menu.html" %}
+
+{% block title %}Settings{% endblock %}
+{% block menu_title %}⚙️ Settings{% endblock %}
+
+{% block content %}
+<div class="menu-section">
+    <h3 class="section-title">Graphics</h3>
+    <div class="info-box">
+        <label><input type="checkbox" checked> Full Screen</label><br>
+        <label><input type="checkbox" checked> V-Sync</label><br>
+        <label>Quality: <select><option>High</option><option selected>Medium</option><option>Low</option></select></label>
+    </div>
+</div>
+
+<div class="menu-section">
+    <h3 class="section-title">Audio</h3>
+    <div class="info-box">
+        <label>Master Volume: <input type="range" min="0" max="100" value="80"></label><br>
+        <label>Music Volume: <input type="range" min="0" max="100" value="60"></label><br>
+        <label>SFX Volume: <input type="range" min="0" max="100" value="70"></label>
+    </div>
+</div>
+
+<div class="menu-section">
+    <h3 class="section-title">Controls</h3>
+    <div class="info-box">
+        <button class="menu-button">Configure Keyboard</button>
+        <button class="menu-button">Configure Gamepad</button>
+    </div>
+</div>
+
+<div class="menu-section">
+    <button class="menu-button" style="background-color: #ff6b00; border-color: #ff6b00;">Save Settings</button>
+    <button class="menu-button">Reset to Default</button>
+</div>
+{% endblock %}

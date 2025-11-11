@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ tutorial_title }} - Road Dogs Tutorial</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: rgba(0, 0, 0, 0.95);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .tutorial-box {
+            max-width: 600px;
+            background: #2a2a2a;
+            border: 2px solid #ff6b00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 20px rgba(255, 107, 0, 0.3);
+        }
+        h1 {
+            color: #ff6b00;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .tutorial-content {
+            line-height: 1.6;
+            margin: 20px 0;
+        }
+        .tutorial-step {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 3px solid #ff6b00;
+            border-radius: 5px;
+        }
+        .step-number {
+            color: #ff6b00;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .next-btn {
+            background: #ff6b00;
+            color: #fff;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .next-btn:hover {
+            background: #ff8c33;
+        }
+    </style>
+</head>
+<body>
+    <div class="tutorial-box">
+        <h1>📚 {{ tutorial_title }}</h1>
+        <div class="tutorial-content">
+            <p>Welcome to the {{ tutorial_title }}!</p>
+
+            {% if window_name == "cruise_speed" %}
+            <div class="tutorial-step">
+                <span class="step-number">1.</span>
+                Use the cruise speed control to set your vehicle's speed.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">2.</span>
+                Adjust speed using the slider or +/- buttons.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">3.</span>
+                Your vehicle will maintain this speed automatically.
+            </div>
+
+            {% elif window_name == "shooting" or window_name == "discharge_shooting" or window_name == "auto_shooting" %}
+            <div class="tutorial-step">
+                <span class="step-number">1.</span>
+                Aim at your target using the mouse cursor.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">2.</span>
+                Click to fire your weapon.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">3.</span>
+                Watch your ammunition and reload when needed.
+            </div>
+
+            {% elif window_name == "driving_control" %}
+            <div class="tutorial-step">
+                <span class="step-number">1.</span>
+                Use WASD or Arrow keys to control your vehicle.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">2.</span>
+                W/↑ - Accelerate, S/↓ - Brake/Reverse
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">3.</span>
+                A/← - Turn Left, D/→ - Turn Right
+            </div>
+
+            {% else %}
+            <div class="tutorial-step">
+                <span class="step-number">1.</span>
+                This tutorial will guide you through {{ window_name }}.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">2.</span>
+                Follow the instructions carefully.
+            </div>
+            <div class="tutorial-step">
+                <span class="step-number">3.</span>
+                Practice makes perfect!
+            </div>
+            {% endif %}
+        </div>
+        <button class="next-btn" onclick="window.close()">Got it!</button>
+    </div>
+</body>
+</html>
