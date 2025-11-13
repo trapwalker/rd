@@ -101,12 +101,12 @@ async def map_teaching_handler(
         )
 
 
-@router.get("/teaching/answer", response_class=PlainTextResponse)
+@router.get("/teaching/answer", response_class=PlainTextResponse, response_model=None)
 @migration_target("sublayers_server.handlers.teaching.ConsoleAnswerTeachingHandler")
 async def console_answer_teaching(
     answer: bool = False,
     user: OptionalCookieUser = None,
-) -> PlainTextResponse | RedirectResponse:
+):
     """
     Handle tutorial consent answer.
 

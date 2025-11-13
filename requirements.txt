@@ -1,4 +1,27 @@
 --index-url https://pypi.python.org/simple/
 
--e git+https://github.com/sergyp/ctx_timer#egg=ctx_timer
+# Web Framework
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+
+# Database
+motor>=3.3.2
+beanie>=1.23.6
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Configuration
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# JSON
+orjson>=3.9.10
+
+# Redis (for rate limiting)
 redis>=5.0.0
+
+# Template engine
+jinja2>=3.1.2

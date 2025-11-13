@@ -36,14 +36,14 @@ except Exception as e:
     templates = None
 
 
-@router.get("/play", response_class=HTMLResponse)
+@router.get("/play", response_class=HTMLResponse, response_model=None)
 @migration_target("sublayers_server.handlers.pages.PlayHandler")
 async def play_handler(
     request: Request,
     mode: str = "",
     user: OptionalCookieUser = None,
-    server_state: ServerStateDep = Depends(get_server_state),
-) -> HTMLResponse | RedirectResponse:
+    server_state: ServerStateDep = None,
+):
     """
     Main game entry point.
 

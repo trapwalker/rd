@@ -1,0 +1,4 @@
+[submodule "sublayers_world"]
+	path = sublayers_world
+	url = git@github.com:trapwalker/rd_world.git
+	branch = 2to3

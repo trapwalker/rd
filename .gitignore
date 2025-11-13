@@ -73,3 +73,7 @@ nginx_conf/ssl.conf
 nginx_conf/ssl_redirect.conf
 src/
 sublayers_common/static/locale/*/yaml/*/.compiled.js
+
+# Environment
+.env
+.env.local
