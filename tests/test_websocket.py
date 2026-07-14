@@ -1,23 +1,52 @@
-"""Tests for WebSocket endpoints."""
+"""Tests for WebSocket endpoints.
 
-import json
+Protocol: the server accepts the connection, then waits (max 5s) for the
+first message containing the auth token ({"auth_token": ...}); the token is
+deliberately NOT read from query params (see SECURITY_FIXES.md). After the
+auth message the server replies with a welcome message of type "connection".
+"""
 
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
-from app.models.user import User
+
+def do_auth(websocket, token: str | None = None) -> dict:
+    """Send the first (auth) message per protocol and return the welcome message."""
+    websocket.send_json({"auth_token": token} if token else {})
+    return websocket.receive_json()
+
+
+def make_user_token(ws_client: TestClient) -> str:
+    """Создать пользователя и получить токен через API самого ws-приложения.
+
+    Session-фикстуры (test_user_token) живут в другом event loop и не могут
+    использоваться вместе с ws_client — Beanie в каждом приложении привязан
+    к своему циклу.
+    """
+    import uuid
+
+    name = "wsuser_" + uuid.uuid4().hex[:10]
+    email = f"{name}@example.com"
+    r = ws_client.post("/api/auth/register", json={
+        "email": email, "username": name, "password": "WsTestPass123",
+    })
+    assert r.status_code == 201, r.text
+    r = ws_client.post("/api/auth/login", json={
+        "email": email, "password": "WsTestPass123",
+    })
+    assert r.status_code == 200, r.text
+    return r.json()["access_token"]
 
 
 class TestWebSocketConnection:
     """Test WebSocket connection management."""
 
-    def test_websocket_connect_anonymous(self, client: TestClient):
+    def test_websocket_connect_anonymous(self, ws_client: TestClient):
         """Test anonymous WebSocket connection."""
-        with client.websocket_connect("/ws") as websocket:
-            # Receive welcome message
-            data = websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            data = do_auth(websocket)
             assert data["type"] == "connection"
             assert data["status"] == "connected"
             assert data["authenticated"] is False
@@ -25,55 +54,44 @@ class TestWebSocketConnection:
 
     def test_websocket_connect_authenticated(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test authenticated WebSocket connection."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Receive welcome message
-            data = websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            data = do_auth(websocket, make_user_token(ws_client))
             assert data["type"] == "connection"
             assert data["status"] == "connected"
             assert data["authenticated"] is True
             assert data["user_id"] is not None
 
-    def test_websocket_ping_pong(self, client: TestClient):
+    def test_websocket_ping_pong(self, ws_client: TestClient):
         """Test ping-pong mechanism."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Send ping
             websocket.send_json({"type": "ping"})
 
-            # Receive pong
             response = websocket.receive_json()
             assert response["type"] == "pong"
 
-    def test_websocket_invalid_json(self, client: TestClient):
+    def test_websocket_invalid_json(self, ws_client: TestClient):
         """Test handling of invalid JSON."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Send invalid JSON
             websocket.send_text("not valid json")
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "json" in response["message"].lower()
 
-    def test_websocket_unknown_message_type(self, client: TestClient):
+    def test_websocket_unknown_message_type(self, ws_client: TestClient):
         """Test handling of unknown message types."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Send unknown message type
             websocket.send_json({"type": "unknown_type"})
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "unknown" in response["message"].lower()
@@ -82,56 +100,46 @@ class TestWebSocketConnection:
 class TestWebSocketMovement:
     """Test player movement through WebSocket."""
 
-    def test_move_without_auth(self, client: TestClient):
+    def test_move_without_auth(self, ws_client: TestClient):
         """Test movement without authentication fails."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Try to move
             websocket.send_json({
                 "type": "move",
                 "position": {"x": 10.0, "y": 20.0}
             })
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "authentication required" in response["message"].lower()
 
     def test_move_with_auth(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test movement with authentication."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Send movement
             position = {"x": 10.0, "y": 20.0}
             websocket.send_json({
                 "type": "move",
                 "position": position
             })
 
-            # Receive acknowledgment
             response = websocket.receive_json()
             assert response["type"] == "move_ack"
             assert response["position"] == position
 
     def test_move_invalid_position(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test movement with invalid position data."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Send movement without position
             websocket.send_json({"type": "move"})
 
             # Should receive acknowledgment with None values
@@ -142,40 +150,33 @@ class TestWebSocketMovement:
 class TestWebSocketActions:
     """Test game actions through WebSocket."""
 
-    def test_action_without_auth(self, client: TestClient):
+    def test_action_without_auth(self, ws_client: TestClient):
         """Test action without authentication fails."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Try to perform action
             websocket.send_json({
                 "type": "action",
                 "action": "attack"
             })
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "authentication required" in response["message"].lower()
 
     def test_action_with_auth(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test action with authentication."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Perform action
             websocket.send_json({
                 "type": "action",
                 "action": "attack"
             })
 
-            # Receive result
             response = websocket.receive_json()
             assert response["type"] == "action_result"
             assert response["action"] == "attack"
@@ -185,92 +186,72 @@ class TestWebSocketActions:
 class TestWebSocketChat:
     """Test chat functionality through WebSocket."""
 
-    def test_chat_without_auth(self, client: TestClient):
+    def test_chat_without_auth(self, ws_client: TestClient):
         """Test chat without authentication fails."""
-        with client.websocket_connect("/ws") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket)
 
-            # Try to send chat message
             websocket.send_json({
                 "type": "chat",
                 "message": "Hello, world!"
             })
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "authentication required" in response["message"].lower()
 
     def test_chat_with_auth(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test chat with authentication."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Send chat message
             message_text = "Hello, world!"
             websocket.send_json({
                 "type": "chat",
                 "message": message_text
             })
 
-            # Should broadcast to all (in this case, receive our own message)
-            # Note: In a real scenario with multiple connections,
-            # this would be received by other clients
-            try:
-                response = websocket.receive_json(timeout=0.5)
-                if response["type"] == "chat":
-                    assert response["message"] == message_text
-                    assert "username" in response
-                    assert "user_id" in response
-            except Exception:
-                # Timeout is acceptable - message was sent
-                pass
+            # Chat is broadcast to all connections, including our own
+            response = websocket.receive_json()
+            assert response["type"] == "chat"
+            assert response["message"] == message_text
+            assert "username" in response
+            assert "user_id" in response
 
     def test_chat_empty_message(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test chat with empty message fails."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Send empty message
             websocket.send_json({
                 "type": "chat",
                 "message": ""
             })
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "invalid message length" in response["message"].lower()
 
     def test_chat_long_message(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test chat with too long message fails."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            # Skip welcome message
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
 
-            # Send message longer than 500 characters
             long_message = "x" * 501
             websocket.send_json({
                 "type": "chat",
                 "message": long_message
             })
 
-            # Receive error
             response = websocket.receive_json()
             assert response["type"] == "error"
             assert "invalid message length" in response["message"].lower()
@@ -298,17 +279,13 @@ class TestWebSocketStats:
 class TestConnectionManager:
     """Test ConnectionManager functionality."""
 
-    def test_multiple_connections(self, client: TestClient):
+    def test_multiple_connections(self, ws_client: TestClient):
         """Test handling multiple simultaneous connections."""
-        # Open multiple WebSocket connections
-        with client.websocket_connect("/ws") as ws1:
-            with client.websocket_connect("/ws") as ws2:
-                # Skip welcome messages
-                ws1.receive_json()
-                ws2.receive_json()
+        with ws_client.websocket_connect("/ws") as ws1:
+            with ws_client.websocket_connect("/ws") as ws2:
+                do_auth(ws1)
+                do_auth(ws2)
 
-                # Both connections should be active
-                # Test ping on both
                 ws1.send_json({"type": "ping"})
                 ws2.send_json({"type": "ping"})
 
@@ -320,17 +297,14 @@ class TestConnectionManager:
 
     def test_connection_cleanup(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
         """Test connection cleanup on disconnect."""
-        # Connect and disconnect
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            do_auth(websocket, make_user_token(ws_client))
             # Connection will be cleaned up when exiting context
 
-        # Verify stats show no connections after disconnect
-        stats_response = client.get("/ws/stats")
+        stats_response = ws_client.get("/ws/stats")
         data = stats_response.json()
         # Note: Stats might not be immediately updated due to async nature
         assert data["total_connections"] >= 0
@@ -339,30 +313,30 @@ class TestConnectionManager:
 class TestWebSocketAuthentication:
     """Test WebSocket authentication mechanisms."""
 
-    def test_invalid_token(self, client: TestClient):
+    def test_invalid_token(self, ws_client: TestClient):
         """Test connection with invalid token."""
-        with client.websocket_connect("/ws?token=invalid_token") as websocket:
-            data = websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            data = do_auth(websocket, "invalid_token")
             assert data["type"] == "connection"
             assert data["authenticated"] is False
 
-    def test_expired_token(self, client: TestClient):
+    def test_expired_token(self, ws_client: TestClient):
         """Test connection with expired token."""
-        # Create an expired token (would need to mock time or use old token)
         expired_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MDAwMDAwMDB9.invalid"
 
-        with client.websocket_connect(f"/ws?token={expired_token}") as websocket:
-            data = websocket.receive_json()
+        with ws_client.websocket_connect("/ws") as websocket:
+            data = do_auth(websocket, expired_token)
             assert data["type"] == "connection"
             assert data["authenticated"] is False
 
     def test_token_in_query_params(
         self,
-        client: TestClient,
-        test_user_token: str
+        ws_client: TestClient,
     ):
-        """Test authentication via query parameters."""
-        with client.websocket_connect(f"/ws?token={test_user_token}") as websocket:
-            data = websocket.receive_json()
+        """Token in query params must be IGNORED (security: tokens leak via URLs)."""
+        token = make_user_token(ws_client)
+        with ws_client.websocket_connect(f"/ws?token={token}") as websocket:
+            # Auth message without token — query param must not authenticate us
+            data = do_auth(websocket)
             assert data["type"] == "connection"
-            assert data["authenticated"] is True
+            assert data["authenticated"] is False

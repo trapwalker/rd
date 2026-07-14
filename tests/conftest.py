@@ -17,14 +17,6 @@ from app.models.user import User
 
 
 @pytest.fixture(scope="session")
-def event_loop() -> Generator[asyncio.AbstractEventLoop, None, None]:
-    """Create event loop for async tests."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
-
-
-@pytest.fixture(scope="session")
 def test_settings():
     """Override settings for testing."""
     settings = get_settings()
@@ -44,7 +36,7 @@ async def test_db(test_settings):
     yield Database
 
     # Cleanup: drop test database
-    if Database.client:
+    if Database.client is not None:
         await Database.client.drop_database("rd_test")
         await Database.disconnect()
 
@@ -53,7 +45,7 @@ async def test_db(test_settings):
 async def clean_db(test_db):
     """Clean database before each test."""
     # Clear all collections
-    if test_db.database:
+    if test_db.database is not None:
         collections = await test_db.database.list_collection_names()
         for collection in collections:
             await test_db.database[collection].delete_many({})
@@ -71,6 +63,23 @@ def app(test_settings):
 def client(app) -> TestClient:
     """Create synchronous test client."""
     return TestClient(app)
+
+
+@pytest.fixture
+def ws_client(test_settings) -> Generator[TestClient, None, None]:
+    """TestClient с прожитым lifespan — для WebSocket-тестов.
+
+    WebSocket-эндпоинт обращается к Mongo из портального event loop
+    TestClient, поэтому Beanie должен быть инициализирован именно в нём
+    (иначе Motor-клиент из чужого цикла блокируется навсегда).
+    """
+    saved_client, saved_database = Database.client, Database.database
+    ws_app = create_app()
+    with TestClient(ws_app) as c:
+        yield c
+    # lifespan закрыл соединение своего цикла — вернуть session-глобалы,
+    # чтобы не сломать последующие async-тесты
+    Database.client, Database.database = saved_client, saved_database
 
 
 @pytest_asyncio.fixture
@@ -126,5 +135,5 @@ def sample_user_data() -> dict[str, Any]:
     return {
         "email": "newuser@example.com",
         "username": "newuser",
-        "password": "securepassword123",
+        "password": "SecurePassword123",
     }
