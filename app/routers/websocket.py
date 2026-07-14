@@ -29,8 +29,11 @@ class ConnectionManager:
         connection_id: str,
         user: User | None = None
     ) -> None:
-        """Register new connection."""
-        await websocket.accept()
+        """Register new connection.
+
+        Соединение уже должно быть принято (websocket.accept) вызывающей
+        стороной — эндпоинт принимает его до фазы аутентификации.
+        """
         self.active_connections[connection_id] = websocket
 
         if user:

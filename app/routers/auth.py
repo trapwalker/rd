@@ -43,8 +43,9 @@ async def register(user_data: UserRegister) -> User:
 
     try:
         # Check if user already exists
+        from beanie.operators import Or
         existing_user = await User.find_one(
-            (User.email == email) | (User.username == username)
+            Or(User.email == email, User.username == username)
         )
 
         if existing_user:
@@ -222,7 +223,7 @@ async def get_current_user_info(
 @router.get("/verify")
 async def verify_token(
     current_user: Annotated[User | None, Depends(get_current_user)]
-) -> dict[str, bool]:
+) -> dict[str, bool | str | None]:
     """
     Verify if current token is valid.
 

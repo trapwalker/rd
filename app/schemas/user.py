@@ -1,8 +1,9 @@
 """User schemas."""
 
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, BeforeValidator, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -22,14 +23,15 @@ class UserCreate(UserBase):
 class UserUpdate(BaseModel):
     """User update schema."""
 
-    display_name: str | None = None
+    display_name: str | None = Field(default=None, min_length=1, max_length=100)
     avatar_url: str | None = None
 
 
 class UserRead(UserBase):
     """User read schema (public info)."""
 
-    id: str
+    # Beanie возвращает PydanticObjectId — приводим к строке при валидации
+    id: Annotated[str, BeforeValidator(str)]
     level: int
     experience: int
     coins: int
