@@ -21,7 +21,7 @@ def xyz2bin(x, y, z):
     if z > MAX_ZOOM:
         raise ETileException('Недопустимое значение z-индекса')
     b = 0
-    for i in xrange(z):
+    for i in range(z):
         b |= ((y & 1) << 1) << (i << 1)
         b |= (x & 1) << (i << 1)
         y >>= 1
@@ -33,11 +33,11 @@ def bin2xyz(binary):
     """
     Преобразование бинарного представления индекса тайла в кортеж (x, y, zoom).
     """
-    b = long(binary)
+    b = int(binary)
     x = y = 0
     z = b & MAX_ZOOM
     b >>=  MAX_BIT_COUNT - (z << 1)
-    for i in xrange(z):
+    for i in range(z):
         x |= (b & 1) << i
         b >>= 1
         y |= (b & 1) << i
@@ -46,7 +46,7 @@ def bin2xyz(binary):
 
 
 
-class Tileid2(long):
+class Tileid2(int):
     """
     Индекс тайла.
     Представляется в виде бинарной последовательности из 64 бит,
@@ -57,10 +57,10 @@ class Tileid2(long):
     def __new__(cls, *args):
         # если нет параметров, то вернуть индекс корня дерева
         if len(args) == 0:
-            return long.__new__(cls, ROOTBIN)
+            return int.__new__(cls, ROOTBIN)
         # если есть 3 параметра, предположить, что это x y z
         elif len(args) == 3:
-            return long.__new__(cls, xyz2bin(*args))
+            return int.__new__(cls, xyz2bin(*args))
         # если аргумент 1, то проверить является ли он Tileid
         elif len(args) == 1:
             arg = args[0]
@@ -70,10 +70,10 @@ class Tileid2(long):
                 return arg
             # если аргумент None, то вернуть индекс корня дерева
             if arg is None:
-                return long.__new__(cls, ROOTBIN)
+                return int.__new__(cls, ROOTBIN)
             # если аргумент является числом
-            if isinstance(arg, long):
-                return long.__new__(cls, arg)
+            if isinstance(arg, int):
+                return int.__new__(cls, arg)
 
         raise ETileException('''Некорректный набор параметров "{!r}".
             Ожидается: (x, y, z)|<Tileid>
@@ -142,8 +142,8 @@ class Tileid2(long):
             'Некорректное значение аргумента level: {}'.format(level)
         size = 2 ** level
         sx, sy, sz = self.index_child_first(level).xyz()
-        for y in xrange(size):
-            for x in xrange(size):
+        for y in range(size):
+            for x in range(size):
                 yield Tileid2(sx+x, sy+y, sz)
 
     def is_child(self, parent):
@@ -169,8 +169,8 @@ class Tileid2(long):
 
         # получить список Tileid на уровне z
         tile_list = []
-        for x in xrange(x1, x2 + 1):
-            for y in xrange(y1, y2 + 1):
+        for x in range(x1, x2 + 1):
+            for y in range(y1, y2 + 1):
                 tile_list.append(Tileid2(x, y, z))
 
         # схлопывание тайлов по их родителям
@@ -197,11 +197,11 @@ class Tileid2(long):
 
 
     def iter_bin(self):
-        b = long(self)
+        b = int(self)
         # сохранить и отбросить зум
         zoom = self.zoom()
         b = b >> MAX_BIT_ZOOM
-        for i in xrange(zoom):
+        for i in range(zoom):
             yield (b >> ((MAX_TILE - i - 1) << 1)) & 3
 
 
@@ -209,11 +209,11 @@ class Tileid2(long):
 
 
     def iter_up(self):
-        b = long(self)
+        b = int(self)
         # сохранить и отбросить зум
         zoom = self.zoom()
         b = b >> MAX_BIT_ZOOM
-        for i in xrange(zoom):
+        for i in range(zoom):
             yield (b >> ((MAX_TILE - (zoom - i)) << 1)) & 3
 
 

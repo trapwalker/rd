@@ -14,7 +14,7 @@ from uuid import uuid1 as get_uid, UUID
 from time import time as get_time  # todo: integer vs float time
 import random
 
-from vectors import Point
+from sublayers_editor.model.vectors import Point
 
 
 TimeClass = get_time().__class__
@@ -97,7 +97,7 @@ class TimelineQueue(PriorityQueue):
     class EMPTY(object):
         __slots__ = []
 
-        def __nonzero__(self):
+        def __bool__(self):
             return False
 
         def __gt__(self, other):
@@ -140,7 +140,7 @@ class TimelineQueue(PriorityQueue):
 
     __len__ = PriorityQueue.qsize
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._head is not self.EMPTY
 
     @property

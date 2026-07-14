@@ -63,7 +63,7 @@ class VisibilityManager(object):
 
     def _get_tid_by_obj(self, obj, time):
         p = obj.position(time=time)
-        tid = Tileid2(long(p.x), long(p.y), self.max_z).parent_by_lvl(self.z)
+        tid = Tileid2(int(p.x), int(p.y), self.max_z).parent_by_lvl(self.z)
         if self._obj_in_tile(obj=obj, tid=tid):
             return tid
         around_tiles = tid.get_around_tiles()
@@ -82,7 +82,7 @@ class VisibilityManager(object):
 
     def add_object(self, obj, time):
         p = obj.position(time=time)
-        self._add_obj_to_tile(tile_id=Tileid2(long(p.x), long(p.y), self.max_z), obj=obj, time=time)
+        self._add_obj_to_tile(tile_id=Tileid2(int(p.x), int(p.y), self.max_z), obj=obj, time=time)
 
     def del_object(self, obj, time):
         tid = self._get_tid_by_obj(obj=obj, time=time)
@@ -110,13 +110,13 @@ class VisibilityManager(object):
     def on_move_objects(self, tile_id, time):
         for obj in self.tiles[tile_id][1]:
             pos = obj.position(time=time)
-            n_tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+            n_tid = Tileid2(int(pos.x), int(pos.y), self.max_z).parent_by_lvl(self.z)
             if n_tid != tile_id:
                 self._del_obj_from_tile(obj=obj, tile_id=tile_id)
                 self._add_obj_to_tile(obj=obj, tile_id=n_tid, time=time)
 
     def get_around_objects(self, pos, time):
-        tid = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+        tid = Tileid2(int(pos.x), int(pos.y), self.max_z).parent_by_lvl(self.z)
         result = []
         for t in tid.get_around_tiles():
             if t in self.tiles.keys():
@@ -127,7 +127,7 @@ class VisibilityManager(object):
         from sublayers_server.model.units import Bot
         all_objects = []
         result = []
-        tid_nec = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(z)
+        tid_nec = Tileid2(int(pos.x), int(pos.y), self.max_z).parent_by_lvl(z)
         if z <= self.z:
             for t_nec in tid_nec.get_around_tiles():
                 for t_orig in t_nec.childs(level=(self.z - z)):
@@ -137,7 +137,7 @@ class VisibilityManager(object):
                 if isinstance(obj, Bot):
                     result.append(obj)
         else:
-            tid_def = Tileid2(long(pos.x), long(pos.y), self.max_z).parent_by_lvl(self.z)
+            tid_def = Tileid2(int(pos.x), int(pos.y), self.max_z).parent_by_lvl(self.z)
             for tid in tid_def.get_around_tiles():
                 if tid in self.tiles.keys():
                     all_objects += self.tiles[tid][1]
@@ -145,7 +145,7 @@ class VisibilityManager(object):
                 if isinstance(obj, Bot):
                     for tid in tid_nec.get_around_tiles():
                         obj_pos = obj.position(time=time)
-                        tid_obj = Tileid2(long(obj_pos.x), long(obj_pos.y), self.max_z)
+                        tid_obj = Tileid2(int(obj_pos.x), int(obj_pos.y), self.max_z)
                         if tid_obj.in_tile(tile=tid):
                             result.append(obj)
                             break

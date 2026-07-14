@@ -6,7 +6,7 @@ class ETileException(Exception):
 
 
 QRTS = 'qrts'
-QRTS2BIN = dict(zip('qrtsQRTS', range(4) * 2))
+QRTS2BIN = dict(zip('qrtsQRTS', list(range(4)) * 2))
 ROOTBIN = 0b11  # зависит от метода представления тайла в памяти
 
 
@@ -62,7 +62,7 @@ def xyz2bin(x, y, z):
     Зависит от метода представления тайла в памяти.
     """
     b = 0b11
-    for i in xrange(z):
+    for i in range(z):
         b <<= 1
         b |= y & 1
         b <<= 1
@@ -91,7 +91,7 @@ def iter2bin(itr):  # зависит от метода представлени�
     return int(t)
 
 
-class Tileid(long):
+class Tileid(int):
     """
     Индекс тайла.
     Представляется в виде бинарной qrts-последовательности,
@@ -102,10 +102,10 @@ class Tileid(long):
 
     def __new__(cls, *args):
         if len(args) == 0:
-            return long.__new__(cls, ROOTBIN)
+            return int.__new__(cls, ROOTBIN)
 
         elif len(args) == 3:
-            return long.__new__(cls, xyz2bin(*args))
+            return int.__new__(cls, xyz2bin(*args))
 
         elif len(args) == 1:
             arg = args[0]
@@ -113,20 +113,20 @@ class Tileid(long):
                 return arg
 
             if arg is None:
-                return long.__new__(cls, ROOTBIN)
+                return int.__new__(cls, ROOTBIN)
 
-            if isinstance(arg, (int, long)):
+            if isinstance(arg, int):
                 bitlen = arg.bit_length()  # int.bit_length python 2.5 incompatible
                 assert (((bitlen % 2) == 0) and (bitlen >= 2) and (arg >> bitlen - 2 == 3)), \
                     'Incorrect binary tile id format: {}'.format(bin(arg))
-                return long.__new__(cls, arg)
+                return int.__new__(cls, arg)
 
-            if isinstance(arg, basestring):
-                return long.__new__(cls, str2bin(arg))
+            if isinstance(arg, str):
+                return int.__new__(cls, str2bin(arg))
 
             # todo: use collections.Iterable
             if hasattr(arg, '__getitem__') or hasattr(arg, 'next') or hasattr(arg, '__iter__'):
-                return long.__new__(cls, iter2bin(arg))
+                return int.__new__(cls, iter2bin(arg))
 
         raise ETileException('''Некорректный набор параметров "{!r}".
             Ожидается: <qrts_bin>|<qrts_str>|(x, y, z)|<list>|<Tileid>
@@ -158,9 +158,9 @@ class Tileid(long):
         """
         if len(args) == 1:
             child = args[0]
-            if isinstance(child, (int, long)) and not isinstance(child, Tileid):
+            if isinstance(child, int) and not isinstance(child, Tileid):
                 child = [child]
-            elif isinstance(child, basestring):
+            elif isinstance(child, str):
                 child = Tileid(child)
 
             if isinstance(child, list):
@@ -178,8 +178,8 @@ class Tileid(long):
         assert isinstance(level, int) and level >= 0, \
             'Некорректное значение аргумента level: {}'.format(level)
         size = 2 ** level
-        for y in xrange(size):
-            for x in xrange(size):
+        for y in range(size):
+            for x in range(size):
                 yield self.child(Tileid(x, y, level))
 
     def qrts(self):

@@ -126,7 +126,7 @@ class Console(object):
 
         try:
             result = self.on_call(cmd, *av, **kw)
-            if not isinstance(result, basestring):
+            if not isinstance(result, str):
                 result = repr(result)
                 
             self.stream_log.write('RESULT: {}\n'.format(result))  # todo: pformat

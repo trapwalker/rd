@@ -1407,7 +1407,7 @@ class TransactionSetRPGState(TransactionTownNPC):
         for buy_skill_name in self.buy_skills:
             if hasattr(agent.example.profile, buy_skill_name):
                 buy_skill = getattr(agent.example.profile, buy_skill_name, None)
-                for val in xrange(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
+                for val in range(buy_skill.value + 1, self.buy_skills[buy_skill_name] + 1):
                     price += buy_skill.price[val].price
                     buy_skill_count += 1
 

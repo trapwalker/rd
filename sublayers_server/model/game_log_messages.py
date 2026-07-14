@@ -116,7 +116,7 @@ class InventoryChangeLogMessage(Message):
         self.outgoings = outgoings
         items_info = dict()
         reg = self.agent.server.reg
-        for node_hash in set(outgoings.keys() + incomings.keys()):
+        for node_hash in set(outgoings) | set(incomings):
             if node_hash not in items_info:
                 items_info[node_hash] = reg.get(node_hash)
 

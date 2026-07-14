@@ -89,7 +89,7 @@ def agents_check(ctx, fixup, wipe_unsolved, reg_reload, skip, limit, details):
     i = skip or 0
     while True:
         try:
-            a_raw = agents.next()
+            a_raw = next(agents)
             counter['2. Processed'] += 1
         except StopIteration:
             break
@@ -186,7 +186,7 @@ def agents_teaching_reset(ctx):
     agents = Agent.objects.as_pymongo()
     while True:
         try:
-            a_raw = agents.next()
+            a_raw = next(agents)
         except StopIteration:
             break
 

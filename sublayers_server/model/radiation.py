@@ -32,7 +32,7 @@ class StationaryRadiation(Observer):
         self.radiation_dps = self.example.radiation_dps
 
     def on_before_delete(self, event):
-        for obj_id, dps in self.targets.iteritems():
+        for obj_id, dps in self.targets.items():
             obj = self.server.objects[obj_id]
             if obj:
                 # info: можно сделать targets.keys()  и вызывать self.radiation_off

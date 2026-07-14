@@ -36,7 +36,7 @@ class ContainerInventoryHandler(FailWithoutAgentHandler):
 class BarterInventoryHandler(FailWithoutAgentHandler):
     def get(self):
         agent = self.agent
-        barter_id = long(self.get_argument("barter_id"))
+        barter_id = int(self.get_argument("barter_id"))
         barter = Barter.get_barter(barter_id=barter_id, agent=agent)
         if (barter is None) or ((agent is not barter.initiator) and (agent is not barter.recipient)):
             log.warning('Agent has not access')

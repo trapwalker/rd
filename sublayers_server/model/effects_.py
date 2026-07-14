@@ -4,10 +4,12 @@ import logging
 log = logging.getLogger(__name__)
 
 from sublayers_server.model.events import Event
-from sublayers_server.model.balance import EffectsDict
 
 
 def get_effects(server):
+    # EffectsDict удалён из balance.py (deprecated), модуль effects_ нигде не
+    # импортируется — импорт сделан ленивым, чтобы модуль оставался импортируемым.
+    from sublayers_server.model.balance import EffectsDict
     for d in EffectsDict.dicts:
         e = Effect(server=server, **d)
         log.info(e)
@@ -47,7 +49,7 @@ class Effect(object):
                  absolute=False, message=None):
         super(Effect, self).__init__()
         self.absolute = absolute
-        str(self) = message
+        self.message = message
         self.name = name
         self.sign = sign
         self.is_stack = is_stack

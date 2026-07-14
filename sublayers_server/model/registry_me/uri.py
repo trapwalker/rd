@@ -65,31 +65,29 @@ class URI(tuple):
         and return tuple like: ('scheme', ['path', 'to', 'the', 'some', 'object'])
         """
         # todo: url decoding
-        if isinstance(uri, unicode):
-            uri = uri.encode(URI_ENCODING)
+        if isinstance(uri, bytes):
+            uri = uri.decode(URI_ENCODING)
 
-        # todo: Test to tries to parse URI from non unicode string
-            
         m = cls._RE_URI.match(uri)
         if m is None:
             raise URIFormatError('Wrong link format: {!r}'.format(uri))
 
         d = m.groupdict()
         scheme = d.get('scheme')
-        scheme = unquote(scheme).decode(URI_ENCODING) if scheme else scheme
+        scheme = unquote(scheme) if scheme else scheme
 
         storage = d.get('storage')
-        storage = unquote(storage).decode(URI_ENCODING) if storage else storage
+        storage = unquote(storage) if storage else storage
 
         path = d.get('path', '')
-        path = tuple([unquote(s).decode(URI_ENCODING) for s in path.split('/')])  # todo: add tailslash
+        path = tuple([unquote(s) for s in path.split('/')])  # todo: add tailslash
         assert path[0] == '', 'URI with non absolute path'
         path = path[1:]
         params = d.get('params', '') or ''
-        params = tuple([(unquote(k).decode(URI_ENCODING), unquote(v).decode(URI_ENCODING)) for k, v in splitparams(params)])
+        params = tuple([(unquote(k), unquote(v)) for k, v in splitparams(params)])
         anchor = d.get('anchor', None)
         if anchor:
-            anchor = unquote(anchor).decode(URI_ENCODING)
+            anchor = unquote(anchor)
         return scheme, storage, path, params, anchor
 
     @classmethod
@@ -133,7 +131,7 @@ class URI(tuple):
             elif isinstance(v, dict):
                 params1.update(v)
             else:
-                if isinstance(v, basestring) and not (set(v) - LETTERS_SET):
+                if isinstance(v, str) and not (set(v) - LETTERS_SET):
                     if 'scheme' not in kw:
                         kw['scheme'] = v
                     elif 'storage' not in kw:
@@ -166,13 +164,13 @@ class URI(tuple):
     @classmethod
     def old__new__(cls, scheme=None, storage=None, path=None, params=None, anchor=None):
         """Create new instance of URI(scheme, storage, path, params, anchor)"""
-        if scheme is not None and storage is None and path is None and isinstance(scheme, basestring):
+        if scheme is not None and storage is None and path is None and isinstance(scheme, str):
             # полагаем что в scheme передан весь uri в виде строки
             _scheme, _storage, _path, _params, _anchor = cls.parse_uri(scheme)  # парсим его
             if anchor:  # если отдельным аргументом передан якорь, то заменяем им тот, что, возможно, был в uri
                 _anchor = anchor
             if params:  # добавляем переданные отдельным аргументом параметры к тем, что были в uri
-                if isinstance(params, basestring):
+                if isinstance(params, str):
                     params = splitparams(params)
                 _params += params
         elif path is None:
@@ -182,31 +180,28 @@ class URI(tuple):
 
         return tuple.__new__(cls, (_scheme, _storage, _path, _params, _anchor))
 
-    def __unicode__(self):
-        return str(self).decode(URI_ENCODING)
-
     def to_string(self, with_params=True, with_anchor=True):
         # todo: use unicode strings
         scheme, storage, path, params, anchor = self
         try:
             if path:
-                path = [quote(s.encode(URI_ENCODING)) for s in path]
+                path = [quote(s) for s in path]
 
             if params:
                 params = [
                     '{}{}'.format(
-                        quote(k.encode(URI_ENCODING)),
-                        '=' + quote(v.encode(URI_ENCODING))
+                        quote(k),
+                        '=' + quote(v)
                     ) if v else ''
                     for k, v in params
                     ]
 
             return '{scheme}{storage}{path}{params}{anchor}'.format(
-                scheme='{}://'.format(scheme.encode(URI_ENCODING)) if scheme else '',
-                storage=storage and quote(storage.encode(URI_ENCODING)) or '',
+                scheme='{}://'.format(scheme) if scheme else '',
+                storage=storage and quote(storage) or '',
                 path=('/' + '/'.join(path)) if path else '',
                 params=('?' + '&'.join(params)) if with_params and params else '',
-                anchor='#{}'.format(quote(anchor.encode(URI_ENCODING))) if with_anchor and anchor is not None else '',
+                anchor='#{}'.format(quote(anchor)) if with_anchor and anchor is not None else '',
             )
         except UnicodeDecodeError as e:
             e_info = dict(locals())

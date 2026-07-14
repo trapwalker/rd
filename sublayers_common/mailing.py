@@ -99,11 +99,8 @@ class Email(object):
         self.reply_to = reply_to
         #self._extra = kw
 
-    def __unicode__(self):
-        return "{self.__class__.__name__} to: {self.adr_to}, from: {self.adr_from}, sub: {self.subject}".format(self=self)
-
     def __str__(self):
-        return unicode(self).encode(getattr(sys.stdout, 'encoding', None) or 'utf-8', errors='replace')
+        return "{self.__class__.__name__} to: {self.adr_to}, from: {self.adr_from}, sub: {self.subject}".format(self=self)
 
     def __repr__(self):
         _is_value_compact = lambda rv: len(rv) < 50 and r'\n' not in rv

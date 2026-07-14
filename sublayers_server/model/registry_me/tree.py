@@ -179,10 +179,11 @@ class RegistryLinkField(BaseField):
 
         # Get value from document instance if available
         value = instance._data.get(self.name)
-        self._auto_dereference = type(instance)._fields[self.name]._auto_dereference
+        # в mongoengine>=0.24 _auto_dereference — read-only property;
+        # присваивание не нужно: значение и так берётся из этого же поля
         global REGISTRY
 
-        if value is not None and self._auto_dereference and isinstance(value, basestring) and REGISTRY is not None:
+        if value is not None and self._auto_dereference and isinstance(value, str) and REGISTRY is not None:
             try:
                 dereferenced = self.to_python(value)
                 instance._data[self.name] = dereferenced
@@ -198,7 +199,7 @@ class RegistryLinkField(BaseField):
         if document is None:
             return
 
-        elif isinstance(document, basestring):
+        elif isinstance(document, str):
             # todo: normalize URI
             return document
 
@@ -234,7 +235,7 @@ class RegistryLinkField(BaseField):
 
     def validate(self, value, **kw):
 
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             # todo: validate registry URI
             pass
 
@@ -263,12 +264,25 @@ class EmbeddedNodeField(EmbeddedDocumentField):
         super(EmbeddedNodeField, self).__init__(document_type, **kwargs)
         self.errors = errors
 
+    @property
+    def document_type(self):
+        # mongoengine>=0.20 разрешает строковую ссылку document_type уже при
+        # создании класса-владельца (_build_index_specs -> _geo_indices), когда
+        # целевой модуль ещё не импортирован. Откладываем разрешение: при
+        # неудаче возвращаем None, строка останется в document_type_obj и будет
+        # разрешена при следующем обращении.
+        from mongoengine.errors import NotRegistered
+        try:
+            return EmbeddedDocumentField.document_type.fget(self)
+        except NotRegistered:
+            return None
+
     def to_python(self, value):
         if value is None:
             return
 
         try:
-            if isinstance(value, basestring):
+            if isinstance(value, str):
                 global REGISTRY
                 if REGISTRY is None:
                     return value
@@ -311,7 +325,7 @@ class NodeMetaclass(DocumentMetaclass):
         new_cls._non_inheritable_fields = set()
         new_cls._deferred_init_fields = set()
 
-        for name, field in new_cls._fields.iteritems():
+        for name, field in new_cls._fields.items():
             # Fields inheritance indexing
             not_inherited = getattr(field, 'not_inherited', False)
             if not_inherited:
@@ -325,7 +339,7 @@ class NodeMetaclass(DocumentMetaclass):
             # Field tags normalization
             tags = getattr(field, 'tags', None)
             if tags is not None and not isinstance(tags, set):
-                if isinstance(tags, basestring):
+                if isinstance(tags, str):
                     tags = set(tags.split())
                 else:
                     tags = set(tags)
@@ -341,7 +355,7 @@ class RLResolveMixin(object):
     def _resolve_field_value(self, field, value):
         if value is None:
             return
-        elif isinstance(field, RegistryLinkField) and isinstance(value, basestring):
+        elif isinstance(field, RegistryLinkField) and isinstance(value, str):
             return field.to_python(value)
         elif not isinstance(field, CONTAINER_FIELD_TYPES):
             return value  # todo: optimize
@@ -368,7 +382,7 @@ class RLResolveMixin(object):
                 expanded_value = expanded_value[:len(expanded_value) - skip_count]
         elif isinstance(field, DictField):
             expanded_value = value
-            for k, v in value.iteritems():
+            for k, v in value.items():
                 if v is not None:
                     new_v = self._resolve_field_value(field.field, v)
                     if new_v is None:
@@ -385,7 +399,7 @@ class RLResolveMixin(object):
 
     def rl_resolve(self):
         cls = type(self)
-        for field_name, field in cls._fields.iteritems():
+        for field_name, field in cls._fields.items():
             value = self._data.get(field_name, None)
             if value is not None:
                 value = self._resolve_field_value(field, value)
@@ -424,7 +438,8 @@ class RLResolveMixin(object):
                 db_field_name not in changed_fields
             ):
                 # Find all embedded fields that have been changed
-                changed = data._get_changed_fields(inspected)
+                # mongoengine>=0.24: _get_changed_fields больше не принимает inspected
+                changed = data._get_changed_fields()
                 changed_fields += ['%s%s' % (key, k) for k in changed if k]
             elif (isinstance(data, (list, tuple, dict)) and
                     db_field_name not in changed_fields):
@@ -438,7 +453,7 @@ class RLResolveMixin(object):
                         continue
 
                 self._nestable_types_changed_fields(
-                    changed_fields, key, data, inspected)
+                    changed_fields, key, data)
         return changed_fields
 
 
@@ -459,7 +474,7 @@ class SubdocToolsMixin(object):
             else:
                 value = repr(value)
 
-            if isinstance(value, basestring) and '\n' in value and (indent_size or indent):
+            if isinstance(value, str) and '\n' in value and (indent_size or indent):
                 value = ('\n' + ' ' * (indent + 2) * indent_size).join(value.split('\n'))
 
             return value
@@ -487,7 +502,7 @@ class DynamicSubdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
         allow_inheritance=True,
     )
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     @warn_calling()
@@ -498,8 +513,7 @@ class DynamicSubdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
         return self.to_string()
 
 
-class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
-    __metaclass__ = NodeMetaclass
+class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin, metaclass=NodeMetaclass):
     _dynamic = False
     STRICT = True
     meta = dict(
@@ -513,7 +527,7 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
     #     super(Subdoc, self).__init__(__only_fields=only_fields, **kw)
 
     #@warn_calling()  # todo: disable dereference
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     @warn_calling()
@@ -522,7 +536,7 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
 
     def iter_attrs(self, tags=None, classes=None):
         # todo: add params: tags_need, tags_deny
-        if isinstance(tags, basestring):
+        if isinstance(tags, str):
             tags = set(tags.split())
         elif tags is not None:
             tags = set(tags)
@@ -557,10 +571,10 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
 
             if isinstance(field, DictField):
                 subfield = field.field
-                return {k: clean_value(subfield, v) for k, v in value.iteritems()}
+                return {k: clean_value(subfield, v) for k, v in value.items()}
 
             if isinstance(field, LocalizedStringField):
-                if isinstance(value, basestring):
+                if isinstance(value, str):
                     return value
                 elif hasattr(value, 'as_dict'):
                     return value.as_dict()
@@ -620,10 +634,10 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
         elif isinstance(field, ListField):
             return [self._copy_field_value(field.field, v) for v in value]
         elif isinstance(field, DictField):
-            return {k: self._copy_field_value(field.field, v) for k, v in value.iteritems()}
+            return {k: self._copy_field_value(field.field, v) for k, v in value.items()}
         elif isinstance(field, EmbeddedDocumentField) and isinstance(value, dict):
             return field.to_python(value)
-        elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
+        elif isinstance(field, EmbeddedNodeField) and isinstance(value, str):
             return field.to_python(value)
         else:
             log.warning('Specify type of expanding value {!r} of field {!r} in {!r}'.format(value, field, self))
@@ -641,7 +655,7 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
             expanded_value = field.to_python(value)
             if hasattr(expanded_value, 'expand_links'):
                 expanded_value.expand_links()
-        elif isinstance(field, EmbeddedNodeField) and isinstance(value, basestring):
+        elif isinstance(field, EmbeddedNodeField) and isinstance(value, str):
             expanded_value = field.to_python(value)
             if expanded_value is not None:
                 expanded_value.expand_links()  # todo: перенести в инстанцирование
@@ -663,7 +677,7 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin):
                 expanded_value = expanded_value[:len(expanded_value) - skip_count]
         elif isinstance(field, DictField):
             expanded_value = value
-            for k, v in value.iteritems():
+            for k, v in value.items():
                 if v is not None:
                     new_v = self._expand_field_value(field.field, v)
                     if new_v is None:
@@ -771,7 +785,7 @@ class Node(Subdoc, SubdocToolsMixin):
 
         extra.update(kw)
 
-        if parent is not None and not isinstance(parent, basestring) and not parent.uri:
+        if parent is not None and not isinstance(parent, str) and not parent.uri:
             # Если наследуемся от inline-нода, запоминаем его как прототип, а родителем считаем его родителя
             proto = parent
             proto_class = type(proto)
@@ -783,7 +797,7 @@ class Node(Subdoc, SubdocToolsMixin):
                     extra[k] = self._copy_field_value(field, v)  # todo: ##OPTIMIZE
 
         _empty_overrided_fields = list(
-            {k for k, v in extra.iteritems() if v is None and k in _inheritable_fields} |
+            {k for k, v in extra.items() if v is None and k in _inheritable_fields} |
             set(_empty_overrided_fields or {})
         )  # todo: Make SetField
 
@@ -793,10 +807,18 @@ class Node(Subdoc, SubdocToolsMixin):
 
         super(Node, self).__init__(
             parent=parent,
-            __only_fields=only_fields,
             _empty_overrided_fields=_empty_overrided_fields,
             **extra
         )
+        # Эмуляция `__only_fields` старого mongoengine: новые версии (>=0.20)
+        # всегда прописывают дефолты всех полей в _data, из-за чего наследуемые
+        # поля выглядят переопределёнными и перестают наследоваться от parent.
+        # Убираем дефолты, проставленные не нами.
+        _provided = set(extra) | {'parent', '_empty_overrided_fields'}
+        _data = self._data
+        for _name in only_fields:
+            if _name not in _provided and _name in _data:
+                _data.pop(_name, None)  # _data может быть StrictDict без __delitem__
         self._inherited_cache = {} if CACHE_INHERITED_FIELDS else None
         self._need_reinst = False
         global REGISTRY
@@ -818,7 +840,7 @@ class Node(Subdoc, SubdocToolsMixin):
         parent = self.parent
         _overrided = set(self._data.keys()) | set(self._empty_overrided_fields)
 
-        for field_name, field in type(parent)._fields.iteritems():  # todo: ##OPTIMIZE: use _inheritable_fields list
+        for field_name, field in type(parent)._fields.items():  # todo: ##OPTIMIZE: use _inheritable_fields list
             if (
                 not getattr(field, 'not_inherited', False)
                 and getattr(field, 'reinst', False)
@@ -956,7 +978,7 @@ def addr2path(addr):
     if isinstance(addr, tuple):
         return addr
 
-    if isinstance(addr, basestring):
+    if isinstance(addr, str):
         if "\\" in addr and '/' not in addr:
             log.warning('URI in non-standard format: %r', addr)
             addr = addr.replace('\\', '/')
@@ -1005,15 +1027,43 @@ class Registry(Document):
             self.update_aliases(subnode)
 
     @warn_calling()
-    def __nonzero__(self):
+    def __bool__(self):
         return True
+
+    def _clear_changed_fields(self):
+        # Штатная рекурсивная реализация mongoengine падает на дереве реестра:
+        # глубина вызовов превышает лимит рекурсии, а обход через getattr
+        # провоцирует ленивый dereference ссылочных полей. Обходим _data
+        # итеративно, не трогая дескрипторы и не заходя в другие Document'ы.
+        stack = [self._data]
+        seen = {id(self._data)}
+        while stack:
+            obj = stack.pop()
+            if isinstance(obj, Document) and obj is not self:
+                continue
+            if hasattr(obj, '_changed_fields'):
+                obj._changed_fields = []
+            inner = getattr(obj, '_data', None)
+            if isinstance(inner, dict):
+                values = inner.values()
+            elif isinstance(obj, dict):
+                values = obj.values()
+            elif isinstance(obj, (list, tuple)):
+                values = obj
+            else:
+                continue
+            for v in values:
+                if id(v) not in seen and (hasattr(v, '_data') or isinstance(v, (dict, list, tuple))):
+                    seen.add(id(v))
+                    stack.append(v)
+        self._changed_fields = []
 
     # todo: del mentions "_put"
 
     def get(self, uri, *defaults):
         """
         :param uri: Registry node URI
-        :type uri: URI|basestring
+        :type uri: URI|str
         :param defaults:
         :return: Node or default if specified
         :rtype: Node|None
@@ -1103,7 +1153,8 @@ class Registry(Document):
                     all_nodes.append(node)
                     for f in os.listdir(pth):
                         next_path = os.path.join(pth, f)
-                        if os.path.isdir(next_path) and not f.startswith('#'):  # and not f.startswith('_'):
+                        # __pycache__ появляется при импорте инстант-классов под Python 3
+                        if os.path.isdir(next_path) and not f.startswith('#') and f != '__pycache__':  # and not f.startswith('_'):
                             stack.append((next_path, node))
 
             log.debug('    structure loaded {} nodes ({:.3f}s)'.format(len(all_nodes), timer.duration))
@@ -1133,16 +1184,16 @@ class Registry(Document):
 
     def _load_node_from_fs(self, path, owner=None):
         """
-        :param path: basestring
+        :param path: str
         :param owner: Node|None
         :return: Node
         """
-        assert isinstance(path, unicode), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
+        assert isinstance(path, str), '_load_node_from_fs: path is not unicode, but: {!r}'.format(path)
         attrs = {}
         if not os.path.isdir(path):
             raise RegistryError('Registry structure is not found by path {!r}'.format(path))
         for f in sorted(os.listdir(path)):
-            assert isinstance(f, unicode), 'listdir returns non unicode value: {!r}'.format(f)
+            assert isinstance(f, str), 'listdir returns non unicode value: {!r}'.format(f)
             # f = f.decode(sys.getfilesystemencoding())
             p = os.path.join(path, f)
             # todo: need to centralization of filtering
@@ -1163,7 +1214,7 @@ class Registry(Document):
 
         attrs.update(owner=owner)
         attrs.setdefault('filename', path)
-        attrs.setdefault('name', os.path.basename(path.strip('\/')))
+        attrs.setdefault('name', os.path.basename(path.strip('\\/')))
         attrs.setdefault('parent', owner)
         attrs.setdefault('abstract', True)  # todo: Вынести это умолчание на видное место
         attrs.setdefault('uri', '{}/{}'.format('reg://' if owner is None else owner.uri, attrs['name']))
@@ -1178,7 +1229,7 @@ class Registry(Document):
         if not class_name:
             parent = attrs.get('parent', None)
             if parent is not None:
-                parent_node = self.get(parent, None) if isinstance(parent, basestring) else parent
+                parent_node = self.get(parent, None) if isinstance(parent, str) else parent
 
                 if parent_node is None:
                     log.warning(
@@ -1208,7 +1259,7 @@ class Registry(Document):
             return cls._from_son(yaml_tools.load(stream))
 
         # TODO: Убедиться, что внутренние ноды вновь загруженного реестра оперируют своей копией реестра, а не синглтоном
-        if isinstance(src, basestring):
+        if isinstance(src, str):
             with codecs.open(src, encoding='utf-8') as src_stream:
                 return _load(src_stream)
         elif hasattr(src, 'read'):
@@ -1252,7 +1303,7 @@ def _deep_import(path, reg_name='registry'):
 def get_global_registry(path, reload=False, save_loaded=True):
     """
     :param path: Path to registry structure in filesystem
-    :type: basestring
+    :type: str
     :param reload: Reload registry required
     :type reload: bool
     :param save_loaded: Save registry to DB after loading
@@ -1273,9 +1324,10 @@ def get_global_registry(path, reload=False, save_loaded=True):
         with Timer(logger=None) as t:
             REGISTRY = Registry.objects.first()
             log.debug('Registry {}fetched from DB ({:.3f}s)'.format('is NOT ' if REGISTRY is None else '', t.duration))
-        with Timer() as t:
-            REGISTRY.root.rl_resolve()
-            log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
+        if REGISTRY is not None:
+            with Timer() as t:
+                REGISTRY.root.rl_resolve()
+                log.debug('Registry links resolved ({:.3f}s).'.format(t.duration))
 
     if REGISTRY is None:
         if save_loaded:
@@ -1334,7 +1386,9 @@ def _patch_complex_field():
                 return value
 
         if self.field:
-            self.field._auto_dereference = self._auto_dereference
+            # mongoengine>=0.24: _auto_dereference — read-only property,
+            # выставляется через set_auto_dereferencing
+            self.field.set_auto_dereferencing(self._auto_dereference)
             value_dict = {}
             for key, item in value.items():
                 try:
@@ -1377,7 +1431,8 @@ def _patch_complex_field():
 _patch_complex_field()
 
 
-map(patch_field_getter, [
+# ВАЖНО: в Python 3 map ленивый, поэтому явный цикл
+for _field_class in [
     #BaseField,
     BooleanField,
     IntField,
@@ -1389,19 +1444,22 @@ map(patch_field_getter, [
     DictField,
     MapField,
     EmbeddedDocumentField,
-])
+]:
+    patch_field_getter(_field_class)
 
 
-class GRLPC(object):
+class _GRLPCMeta(type):
+    # был py2-идиомой `class __metaclass__(type)` внутри GRLPC
+    def __enter__(cls):
+        return cls()
+
+    def __exit__(cls, t, v, tb):
+        pass
+
+
+class GRLPC(object, metaclass=_GRLPCMeta):
     """Global Registry Link Problems Counter"""
     total = 0
-
-    class __metaclass__(type):
-        def __enter__(self):
-            return self()
-
-        def __exit__(self, t, v, tb):
-            pass
 
     def __init__(self):
         self.count = self.total
@@ -1413,7 +1471,7 @@ class GRLPC(object):
     def __int__(self):
         return self.total - self.count
 
-    def __nonzero__(self):
+    def __bool__(self):
         return bool(int(self))
 
     def __str__(self):

@@ -3,7 +3,7 @@
 import logging
 log = logging.getLogger(__name__)
 
-import metrics
+import sublayers_server.model.metrics as metrics
 
 
 class StatLogger(dict):

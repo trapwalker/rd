@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from tileid import Tileid, ROOT
-from tileid2 import Tileid2
+from sublayers_editor.model.tileid import Tileid, ROOT
+from sublayers_editor.model.tileid2 import Tileid2
 from math import tan, pi
 import copy
 
@@ -9,21 +9,14 @@ import logging.config
 log = logging.getLogger(__name__)
 
 
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import pickle
 
-import pdb
-
-if not hasattr(__builtins__, 'bin'):
-    from py25patch import bin
 
 PRESENT = 1
 ABSENT = 0
 UNKNOWN = 2
 
-SIGNATURE = '#TS'
+SIGNATURE = b'#TS'
 
 
 class Link(tuple):
@@ -49,7 +42,7 @@ class Q(list):
 
 class Tileset(object):
     def __init__(self, value=ABSENT, level=None):
-        if isinstance(value, file):
+        if hasattr(value, 'read'):
             assert level is None, 'При инициализации из файла level не указывается.'
             self._tree = [None]
             self._level = None
@@ -174,9 +167,9 @@ class Tileset(object):
                 else:
                     d[item] = cnt
             except TypeError:
-                raise TypeError, 'В качестве элемента дерева был использован \
+                raise TypeError('В качестве элемента дерева был использован \
                     нехешируемый объект: {0!r}. \nВ этом случае использовать \
-                    данную функцию нельзя.'.format(item)
+                    данную функцию нельзя.'.format(item))
 
         def _cnt(node, level):
             if isinstance(node, Q):
@@ -197,7 +190,7 @@ class Tileset(object):
             idnt, node = stack.pop()
             yield idnt, node
             if isinstance(node, Q):
-                stack.extend(reversed(zip(idnt.childs(), node)))
+                stack.extend(reversed(list(zip(idnt.childs(), node))))
 
     def iter_leafs(self):
         '''Итератор обхода листьев дерева.
@@ -242,8 +235,8 @@ class Tileset(object):
         elif bpn <= 4: bpn = 4
         elif bpn <= 8: bpn = 8
         else:
-            raise Exception, 'Сохранение деревьев с количеством состояний ' \
-                             'листьев, превышающим 254, не поддерживается.'
+            raise Exception('Сохранение деревьев с количеством состояний '
+                            'листьев, превышающим 254, не поддерживается.')
         mask = 2 ** bpn - 1
 
         # словарь кодирования значений узлов при сохранении
@@ -251,9 +244,9 @@ class Tileset(object):
         # словарь декодирования значений узлов при загрузке
         d_decode = {'__bpn__': bpn, '__level__': self.level}
         # допустимые коды элементов дерева
-        codespace = range(0, 2 ** bpn)
+        codespace = list(range(0, 2 ** bpn))
         # пространство значений листьев дерева
-        keyspace = [i for i in sorted(stat.keys()) if i != '__fork__']
+        keyspace = sorted(i for i in stat.keys() if i != '__fork__')  # py3: сортировать после фильтрации '__fork__' (str не сравнима с int)
 
         # Стараемся кодировать листья реальными их значениями в дереве
         for i in keyspace[:]:
@@ -282,7 +275,6 @@ class Tileset(object):
         '''
         # Получаем набор параметров сохранения
         bpn, mask, fork, d_encode, d_decode = self._save_auto_params()
-        print('bpn=', bpn, mask, fork)
         if not raw:
             f.write(SIGNATURE)
             pickle.dump(d_decode, f)
@@ -294,12 +286,12 @@ class Tileset(object):
             buf |= (x & mask) << shift
             shift += bpn
             if shift >= 8:
-                f.write(chr(buf))
+                f.write(bytes([buf]))
                 buf = 0
                 shift = 0
 
         if shift > 0:
-            f.write(chr(buf))
+            f.write(bytes([buf]))
 
     def load(self, f):
         '''Загрузка маски покрытия из файлового объекта f.'''
@@ -337,7 +329,7 @@ class Tileset(object):
                     self.set_tile(*i)
             return self
         else:
-            raise Exception, 'Type error: <{0}> += <{1}>'.format(type(self), type(other))
+            raise Exception('Type error: <{0}> += <{1}>'.format(type(self), type(other)))
 
     def __eq__(self, other):
         ## Сравнение Tileset'ов без учета глубины
@@ -515,10 +507,10 @@ class Tileset(object):
 #------------------------------------------------------------------------------
 def bitreader(f, bitcount):
     mask = 2 ** bitcount - 1
-    steps = range(8 / bitcount)
+    steps = range(8 // bitcount)
     byte = f.read(1)
-    while byte != '':
-        byte = ord(byte[0])
+    while byte != b'':
+        byte = byte[0]
         for i in steps:
             yield byte & mask
             byte >>= bitcount
@@ -554,7 +546,7 @@ def count_in_tree(tree, value, nodeClasses=(list, tuple)):
 
 ##############################################################################
 if __name__ == '__main__':
-    from image_to_tileset import TilesetToImage, ImageToTileset
+    from sublayers_editor.model.image_to_tileset import TilesetToImage, ImageToTileset
     ts = Tileset(open('d:/ts'))
 
     '''
@@ -570,7 +562,7 @@ if __name__ == '__main__':
     ts2 = Tileset()
 
     zoom = 10
-    for angle in xrange(0, 359):
+    for angle in range(0, 359):
         res =  ts.intersect_by_ray(Tileid(530, 530, 10), pi*(float(angle))/180, Tileid2(515, 515, 10).parent_by_lvl(1))
         print(res, angle)
         if not (res is None):

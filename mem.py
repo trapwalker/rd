@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
         process.cpu_percent()
         for i in range(10):
-            for j in xrange(10**6):
+            for j in range(10**6):
                 j*=j
             print('CPU%:    ', process.cpu_percent(), '%')
     else:

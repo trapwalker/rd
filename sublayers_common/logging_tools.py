@@ -7,7 +7,8 @@ import sys
 class Formatter(logging.Formatter):
     def formatException(self, ei):
         res = super(Formatter, self).formatException(ei)
-        res = res.decode('utf-8')
+        if isinstance(res, bytes):
+            res = res.decode('utf-8')
         return res
 
 
@@ -17,7 +18,7 @@ def handler(cls=logging.StreamHandler, fmt=None, level=None, **kw):
         h.setLevel(level)
 
     if fmt:
-        if isinstance(fmt, basestring):
+        if isinstance(fmt, str):
             fmt = logging.Formatter(fmt)
         elif isinstance(fmt, tuple):
             fmt = logging.Formatter(*fmt)

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
 #from PIL import Image, ImageDraw #Подключим необходимые библиотеки.
-from tileset import Tileset
-from tileid import Tileid
-from tileid2 import Tileid2
-from pymongo import Connection
+from sublayers_editor.model.tileset import Tileset
+from sublayers_editor.model.tileid import Tileid
+from sublayers_editor.model.tileid2 import Tileid2
+from pymongo import MongoClient
 
 
 
@@ -26,8 +26,8 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
         x_finish = int(2 ** zoom)
     # проход по всем тайлам, возвращает (имя тайла, координаты x, y на заданном зуме)
     def tile_file(zoom):
-        for xx in xrange(x_start, x_finish):
-            for yy in xrange(y_start, y_finish):
+        for xx in range(x_start, x_finish):
+            for yy in range(y_start, y_finish):
                 # TODO: поменять format(zoom, yy, xx) на format(zoom, xx, yy)
                 yield (directory + r'/{}/{}/{}.png'.format(zoom, xx, yy), xx, yy)
 
@@ -48,8 +48,8 @@ def ImageToTileset(directory, zoom, x_start=0, y_start=0, x_finish=None, y_finis
         im = Image.open(fn[0])
         pxs = im.load()
         width, height = im.size
-        for x in xrange(width):
-            for y in xrange(height):
+        for x in range(width):
+            for y in range(height):
                 if is_color(pxs[x, y]):
                     ts.set_tile(Tileid(fn[1] * 256 + x, fn[2] * 256 + y, zoom + 8))
     return ts
@@ -96,7 +96,7 @@ def TilesetToMongoDB(tileset, collection, color, ts_name):
     for leaf in tileset.iter_leafs():
         if leaf[1] == 1:
             x, y, z = leaf[0].xyz()
-            obj = {'tileid': Tileid2(long(x), long(y), long(z)),
+            obj = {'tileid': Tileid2(int(x), int(y), int(z)),
                    'color': color,
                    'ts_name': ts_name
             }
@@ -117,7 +117,7 @@ def MongoDBToTileset(collection, ts_name):
 def MongoDBToTilesets(collection):
     tss = {}
     for obj in collection.find():
-        if not tss.has_key(obj['ts_name']):
+        if obj['ts_name'] not in tss:
             tss[obj['ts_name']] = Tileset()
         x, y, z = Tileid2(obj['tileid']).xyz()
         tss[obj['ts_name']].set_tile(Tileid(x, y, z))
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     ts.save(open('d:/ts_scrub_12', 'w'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
-    db_connection = Connection()
+    db_connection = MongoClient()
     db = db_connection.maindb
     ts = Tileset(open('d:/tiles/ts_road_15'))
     print(TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road'))

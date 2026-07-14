@@ -55,7 +55,7 @@ class Event(object):
         @param float time: Time of event
         @param collections.Callable | None callback_before: Callback to call before on_perform
         @param collections.Callable | None callback_after: Callback to call after on_perform
-        @param basestring comment: Debug text
+        @param str comment: Debug text
         """
         self.server = server  # todo: Нужно ли хранить ссылку на сервер в событии?
         assert time is not None, 'classname event is {}'.format(self.classname)
@@ -94,7 +94,7 @@ class Event(object):
     def __le__(self, other):
         return (self.time, self._unumber) <= (other.time, other._unumber)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self.actual
 
     def __str__(self):

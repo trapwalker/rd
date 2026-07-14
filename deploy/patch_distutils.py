@@ -3,7 +3,7 @@
 import sys
 import os
 
-CFG_PATH = 'Lib\distutils\distutils.cfg'
+CFG_PATH = r'Lib\distutils\distutils.cfg'
 
 DATA = '''[build]
 compiler=mingw32

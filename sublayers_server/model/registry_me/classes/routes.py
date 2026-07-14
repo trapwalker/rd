@@ -58,7 +58,7 @@ class Route(AbstractRoute):
     def nearest_point(self, position):  # Вызывать при возвращении на маршрут (или при старте маршрута)
         index = self.current_index
         current_distance = None
-        iterator = xrange(self.current_index, len(self.points)) if not self.reverse else xrange(len(self.points)-1, self.current_index-1, -1)
+        iterator = range(self.current_index, len(self.points)) if not self.reverse else range(len(self.points)-1, self.current_index-1, -1)
         for i in iterator:
             d = position.distance(self.points[i].as_point())
             if current_distance is None or current_distance > d:

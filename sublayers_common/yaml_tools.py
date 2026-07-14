@@ -3,8 +3,13 @@
 import logging
 log = logging.getLogger(__name__)
 
-from yaml import load, YAMLError, Dumper
+from yaml import YAMLError, Dumper, FullLoader
 import yaml.representer
+
+
+def load(stream, Loader=FullLoader):
+    # PyYAML>=6 требует явного указания Loader
+    return yaml.load(stream, Loader=Loader)
 
 
 class CompactDumper(Dumper):
@@ -32,7 +37,7 @@ def save_to_file(data, f, indent=2, format='yaml'):
             from bson import json_util
             s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
 
-    if isinstance(f, basestring):
+    if isinstance(f, str):
         with open(f, 'w') as stream:
             _save(stream)
     elif hasattr(f, 'write'):

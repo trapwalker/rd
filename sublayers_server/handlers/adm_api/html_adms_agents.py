@@ -306,7 +306,7 @@ class AdmUserHystoryHandler(AdmEngineHandler):
     all_types = AdminLogRecord.all_used_types()
 
     def get_adm_logs(self, user):
-        types = filter(lambda x: x, self.get_argument("types", "").split('.'))
+        types = [x for x in self.get_argument("types", "").split('.') if x]
         limit = int(self.get_argument("limit", 100))
         dstart_sec = int(self.get_argument("ds", 0))
         dfin_sec = int(self.get_argument("df", 0))

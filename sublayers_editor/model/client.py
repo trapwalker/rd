@@ -4,7 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from bson.json_util import dumps
-from tileid2 import Tileid2 as Tileid
+from sublayers_editor.model.tileid2 import Tileid2 as Tileid
 
 class Client(object):
     def __init__(self, connection, srv):
@@ -41,7 +41,7 @@ class Client(object):
 
     def delObject(self, obj):
         log.info('Client: Del object from client')
-        if self.objects.has_key(obj['_id']):
+        if obj['_id'] in self.objects:
             mes = dict(
                 cls='receiveDelObject',
                 obj=obj
@@ -51,7 +51,7 @@ class Client(object):
 
     def changeObject(self, obj):
         log.info('Client: Change object')
-        if self.objects.has_key(obj['_id']):
+        if obj['_id'] in self.objects:
             self.objects[obj['_id']] = obj
             mes = dict(
                 cls='receiveChangeObject',
@@ -122,7 +122,7 @@ class Client(object):
         # запись новых объектов к себе в список
         list_send = []
         for obj in objects:
-            if not self.objects.has_key(obj['_id']):
+            if obj['_id'] not in self.objects:
                 self.objects[obj['_id']] = obj
                 list_send.append(obj)
 
@@ -140,7 +140,7 @@ class Client(object):
         # запись новых объектов к себе в список
         list_send = []
         for obj in objects:
-            if not self.ts_leafs.has_key(obj['_id']):
+            if obj['_id'] not in self.ts_leafs:
                 self.ts_leafs[obj['_id']] = obj
                 list_send.append(obj)
 

@@ -659,7 +659,7 @@ class QuickLocalServer(LocalServer):
         car_proto_list_len = len(car_proto_list)
         current_machine_index = 0
         bots_names = self.reg.get('/registry/world_settings').quick_game_bots_nick
-        for i in xrange(bot_count):
+        for i in range(bot_count):
             # Найти или создать профиль
             name = bots_names[i] if bots_names and i < len(bots_names) else 'quick_bot_{}'.format(i)
             user = UserProfile.get_by_name(name=name)

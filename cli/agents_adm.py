@@ -76,7 +76,7 @@ class Select(object):
 
         while True:
             try:
-                a_raw = self.qs.next()
+                a_raw = next(self.qs)
                 stat['2. Processed'] += 1
             except StopIteration:
                 break

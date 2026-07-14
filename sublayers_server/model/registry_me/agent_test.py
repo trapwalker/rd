@@ -47,7 +47,7 @@ def test1(reload, save_loaded):
 
         try:
             with GRLPC as problems:
-                a_raw= agents.next()
+                a_raw = next(agents)
                 a = Agent._from_son(a_raw)
             print('{:5}: '.format(i), end='')
             print('{:32} {}'.format(a.login, problems))

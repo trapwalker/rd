@@ -192,7 +192,9 @@ class Inventory(object):
         return self._items.values()
 
     def add_item(self, item, time, position=None, make_change=True):
-        if position >= self.max_size or position < 0:
+        # position=None означает «найти свободную позицию» (в py2 None
+        # сравнивался с числами, в py3 это TypeError)
+        if position is not None and (position >= self.max_size or position < 0):
             position = None
         if position is None:
             # todo: сначала поискать такой же стак, чтобы оно влезло в один стак
@@ -255,7 +257,7 @@ class Inventory(object):
         return None
 
     def get_free_position(self):
-        for i in xrange(self.max_size):
+        for i in range(self.max_size):
             if self.get_item(position=i) is None:
                 return i
 

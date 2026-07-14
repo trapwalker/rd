@@ -216,7 +216,7 @@ class ChatRoom(object):
             else:
                 times = silent_info["times"]
                 times.append(time)
-                times = filter(lambda t: t > time - 5.0, times)
+                times = [t for t in times if t > time - 5.0]
                 silent_info["times"] = times
                 if len(times) > 5:
                     if agent.user:
@@ -268,8 +268,8 @@ class PrivateChatRoom(ChatRoom):
                     chat.exclude(agent=agent, time=time)
 
     def __init__(self, agent, recipient, time):
-        assert isinstance(agent._login, unicode)
-        assert isinstance(recipient._login, unicode)
+        assert isinstance(agent._login, str)
+        assert isinstance(recipient._login, str)
         super(PrivateChatRoom, self).__init__(time=time, name=("{!s} -> {!s}".format(agent._login, recipient.user.name)))  # todo: use unicode
         self.include(agent=agent, time=time)
         self.include(agent=recipient, time=time)

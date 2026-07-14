@@ -636,7 +636,7 @@ class Agent(RLResolveMixin, Document):
         for q in self.profile.quests:
             q._agent = self
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def as_client_dict(self):
@@ -654,7 +654,7 @@ class Agent(RLResolveMixin, Document):
             tf='T' if self.teaching_flag else 't',
         )
 
-    def __unicode__(self):
+    def __str__(self):
         return '<{self.__class__.__name__}({qf}{tf}):{self.login}>'.format(
             self=self,
             qf='Q' if self.quick_flag else 'q',

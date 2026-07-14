@@ -50,7 +50,7 @@ def call_log(logger='stderr', level='DEBUG'):
     elif hasattr(logger, 'write'):
         def to_log(message, level=level):
             logger.write(message + '\n')
-    elif isinstance(logger, basestring) and logger in _STD_STREAMS:
+    elif isinstance(logger, str) and logger in _STD_STREAMS:
         def to_log(message, level=level):
             _STD_STREAMS[logger].write(message + '\n')
     else:

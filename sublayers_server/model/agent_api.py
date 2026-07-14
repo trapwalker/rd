@@ -102,7 +102,7 @@ class AgentConsoleNamespace(Namespace):
         agent = None
         if user is None:
             agent = self.agent
-        elif isinstance(user, basestring):
+        elif isinstance(user, str):
             agent = self.agent.server.agents_by_name.get(user.strip())
 
         if agent is None:
@@ -264,7 +264,7 @@ class AgentConsoleNamespace(Namespace):
             if agent.car and isinstance(agent, AI):
                 time = self.agent.server.get_time()
                 pos = agent.car.position(time)
-                x, y, z = Tileid(long(pos.x), long(pos.y), 26).parent(12).xyz()
+                x, y, z = Tileid(int(pos.x), int(pos.y), 26).parent(12).xyz()
                 route = agent.event_quest and agent.event_quest.dc and agent.event_quest.dc.route
                 r = '{} with route={}, ({:.2f}, {:.2f}) EventQuest={} ActionQuest={}'.format(agent.print_login(), route, x, y, agent.event_quest, agent.action_quest)
                 log.debug(r)
@@ -438,7 +438,7 @@ class AgentAPI(API):
 
         # print('init_time')
         # t0 = self.agent.server.get_time()
-        # for add_mul in xrange(1, 6):
+        # for add_mul in range(1, 6):
         #     InitTimeEvent(time=t0 + add_mul * 5, agent=self.agent).post()
 
         # эффекты
@@ -566,8 +566,8 @@ class AgentAPI(API):
 
     @public_method
     def send_create_party_from_template(self, name, description, exp_share_type):
-        assert name is None or isinstance(name, unicode)
-        assert description is None or isinstance(description, unicode)
+        assert name is None or isinstance(name, str)
+        assert description is None or isinstance(description, str)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("send_create_party_from_template name={!r}".format(name))
         self.agent.adm_log(type="party", text="send_create_party_from_template name={!r}".format(name))
@@ -575,7 +575,7 @@ class AgentAPI(API):
 
     @public_method
     def send_join_party_from_template(self, name):
-        assert name is None or isinstance(name, unicode)
+        assert name is None or isinstance(name, str)
         self.agent.log.info("send_join_party_from_template name={!r}".format(name))
         self.agent.adm_log(type="party", text="send_join_party_from_template name={!r}".format(name))
         self.set_party(name=name)
@@ -583,8 +583,8 @@ class AgentAPI(API):
     @public_method
     def set_party(self, name=None, description='', exp_share_type=False):
         # todo: review
-        assert name is None or isinstance(name, unicode)
-        assert description is None or isinstance(description, unicode)
+        assert name is None or isinstance(name, str)
+        assert description is None or isinstance(description, str)
         assert exp_share_type is None or isinstance(exp_share_type, bool)
         self.agent.log.info("set_party name={!r}".format(name))
         self.agent.adm_log(type="party", text="set_party name={!r}".format(name))
@@ -593,19 +593,19 @@ class AgentAPI(API):
 
     @public_method
     def get_party_info(self, name):
-        assert name is None or isinstance(name, unicode)
+        assert name is None or isinstance(name, str)
         self.agent.log.info("get_party_user_info name={!r}".format(name))
         PartyGetPartyInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
     @public_method
     def get_party_user_info(self, name):
-        assert name is None or isinstance(name, unicode)
+        assert name is None or isinstance(name, str)
         self.agent.log.info("get_party_user_info name={!r}".format(name))
         PartyGetPartyUserInfoEvent(agent=self.agent, name=name, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_invite(self, username):
-        assert username is None or isinstance(username, unicode)
+        assert username is None or isinstance(username, str)
         self.agent.log.info("send_invite username={!r}".format(username))
         SendInviteEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
@@ -616,13 +616,13 @@ class AgentAPI(API):
 
     @public_method
     def send_kick(self, username):
-        assert username is None or isinstance(username, unicode)
+        assert username is None or isinstance(username, str)
         self.agent.log.info("send_kick username={!r}".format(username))
         SendKickEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
     @public_method
     def send_change_category(self, username):
-        assert username is None or isinstance(username, unicode)
+        assert username is None or isinstance(username, str)
         self.agent.log.info("send_change_category username={}".format(username))
         SendChangeCategoryEvent(agent=self.agent, username=username, time=self.agent.server.get_time()).post()
 
@@ -1113,7 +1113,7 @@ class AgentAPI(API):
     def get_tiles_admin(self, tile_name, x, y):
         log.info('{} get_tiles_admin for: {} / {} : {}'.format(self.agent, tile_name, x, y))
         from sublayers_server.model.tile_archive import get_tiles_admin
-        get_tiles_admin(long(x), long(y), tile_name=tile_name)
+        get_tiles_admin(int(x), int(y), tile_name=tile_name)
         messages.AdminArchiveCompleteMessage(agent=self.agent, time=self.agent.server.get_time()).post()
 
     # Панель быстрого доступа
@@ -1155,7 +1155,7 @@ class AgentAPI(API):
     @public_method
     def teleport(self, x, y):
         self.agent.log.info('teleport x={}, y={}'.format(x, y))
-        p = Point(long(x), long(y))
+        p = Point(int(x), int(y))
         if self.agent.car and p:
             # self.agent.save(time=self.agent.server.get_time())
             ex_car = self.agent.car.example

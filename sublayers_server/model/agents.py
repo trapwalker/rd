@@ -7,8 +7,8 @@ from sublayers_server.model.base import Object
 from sublayers_server.model.party import PartyInviteDeleteEvent
 from sublayers_server.model.units import Unit, ExtraMobile
 from sublayers_server.model.weapon_objects.mine import BangMine
-from counterset import CounterSet
-from map_location import MapLocation, Town
+from sublayers_server.model.counterset import CounterSet
+from sublayers_server.model.map_location import MapLocation, Town
 from sublayers_server.model.registry_me.uri import URI
 from sublayers_server.model.registry_me.tree import Node
 from sublayers_server.model.registry_me.classes.inventory import LoadInventoryEvent
@@ -108,7 +108,7 @@ class Agent(Object):
 
     def generate_fake_login(self):
         max_iterations = 500
-        for i in xrange(0, max_iterations):
+        for i in range(0, max_iterations):
             name_pair = NameGenerator.pair()
             login = '{}_{}_{}'.format(name_pair[0], name_pair[1], randint(100, 999))
             if self.server.agents_by_name.get(login, None) is None:

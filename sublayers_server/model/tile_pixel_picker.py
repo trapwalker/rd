@@ -9,8 +9,8 @@ if __name__ == '__main__':
     log.level = logging.DEBUG
     log.addHandler(logging.StreamHandler(sys.stderr))
 
-from tileid import Tileid
-from async_tools import async_deco
+from sublayers_server.model.tileid import Tileid
+from sublayers_server.model.async_tools import async_deco
 
 import os
 from PIL import Image
@@ -33,7 +33,8 @@ class TilePicker(object):
         self._download_list.add(tid)
         async_deco(self.get_tile, result_callback=self._tile_load_done)(tid)  # todo: catch exceptions
 
-    def _tile_load_done(self, (tid, value)):
+    def _tile_load_done(self, result):
+        tid, value = result
         self._cache[tid] = value
         self._download_list.remove(tid)
 
@@ -70,11 +71,11 @@ class TilePicker(object):
 
 
 if __name__ == '__main__':
-    from vectors import Point
+    from sublayers_server.model.vectors import Point
     pth = r"..\temp\tiles_map_terrain_14_0-255"
     x, y, z = 3012, 6591, 14  # center of test area
     tp = TilePicker(path=pth, pixel_depth=14 + ONE_TILE_DEPTH)
-    for i in xrange(2000):
+    for i in range(2000):
         p = Point.random_gauss(Point(x * 256 + 127, y * 256 + 127), 500)
         xy = int(p.x), int(p.y)
         print(xy, tp[xy])

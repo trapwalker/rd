@@ -14,7 +14,7 @@ def search_in_file(src='.', mask='*.css', recursive=True):
     if not isinstance(mask, collections.Callable):
         if mask is None:
             masks = []
-        elif isinstance(mask, basestring):
+        elif isinstance(mask, str):
             masks = [mask]
             
         mask = lambda fn: any((fnmatch.fnmatch(fn, m) for m in masks))

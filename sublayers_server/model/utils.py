@@ -143,7 +143,7 @@ class TimelineQueue(PriorityQueue):
     class EMPTY(object):
         __slots__ = []
 
-        def __nonzero__(self):
+        def __bool__(self):
             return False
 
         def __gt__(self, other):
@@ -192,7 +192,7 @@ class TimelineQueue(PriorityQueue):
 
     __len__ = PriorityQueue.qsize
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._head is not self.EMPTY
 
     @property

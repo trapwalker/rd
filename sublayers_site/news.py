@@ -26,7 +26,7 @@ class NewsManager(object):
         os.chdir('news')
         for news_file_name in filter(lambda x: x.endswith('.yaml'), os.listdir('.')):
             news_file = open(news_file_name, 'r')
-            news_list.append(yaml.load(news_file))
+            news_list.append(yaml.load(news_file, Loader=yaml.FullLoader))
             news_file.close()
         os.chdir(serv_dir)
 
@@ -42,10 +42,7 @@ class NewsManager(object):
         tornado.ioloop.IOLoop.current().call_later(delay=600, callback=self.refresh_news)
 
     def sort_news_by_date(self):
-        def compare_news_date(news1, news2):
-            cmp = news1['iso_date'] > news2['iso_date']
-            return -1 if cmp else 1
-        self.news_list.sort(cmp=compare_news_date)
+        self.news_list.sort(key=lambda news: news['iso_date'], reverse=True)
 
     def news_by_locale(self, locale):
         news = []

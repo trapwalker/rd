@@ -14,7 +14,7 @@ from tornado.options import define, options
 
 from model.editor_server import EditorServer
 
-from client_connector import ClientSocketHandler
+from sublayers_editor.client_connector import ClientSocketHandler
 
 define("port", default=80, help="run on the given port", type=int)
 # todo: logging config file path define as tornado option

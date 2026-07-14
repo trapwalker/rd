@@ -2,7 +2,7 @@
 import logging
 
 if __name__ == '__main__':
-    import log_setup
+    import sublayers_server.log_setup as log_setup
     log_setup.init()
 
 log = logging.getLogger(__name__)
@@ -19,8 +19,8 @@ CSV_QUOTE = '"'
 CSV_ESCAPE = '\\'
 
 def prepare_value(value):
-    if not isinstance(value, basestring):
-        value = unicode(value)
+    if not isinstance(value, str):
+        value = str(value)
     
     if {CSV_QUOTE, CSV_ESCAPE} & set(value):
         value = (value

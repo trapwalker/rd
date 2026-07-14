@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import urlparse
+import urllib.parse as urlparse
 import sys
 import os
 

@@ -263,7 +263,7 @@ class Party(object):
 
     def __init__(self, time, owner, name=None, description='', exp_share=False):
         if (name is None) or (name == ''):
-            name = unicode(self.classname)
+            name = str(self.classname)
         while name in self.parties:
             name = inc_name_number(name)
         self.parties[name] = self

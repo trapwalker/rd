@@ -17,7 +17,7 @@ except ImportError as e:
     from json import loads as json_decode
 
 
-from utils import serialize
+from sublayers_editor.model.utils import serialize
 
 
 class EAPIError(Exception):
@@ -45,7 +45,7 @@ def public_method(func):
     def cover(*av, **kw):
         log_call = '{method}({params})'.format(
             method=func.__name__,
-            params=', '.join(map(repr, av) + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
+            params=', '.join([repr(a) for a in av] + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
         )
         log.info('API call: %s ...', log_call)
         try:

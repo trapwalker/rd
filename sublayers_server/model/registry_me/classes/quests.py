@@ -37,7 +37,7 @@ def unicode_args_substitution(func, template_renderer, **kw_dict):
         av2 = []
         for v in av:
             v2 = v
-            if isinstance(v, unicode):
+            if isinstance(v, str):
                 try:
                     v2 = template_renderer(v, **kw_dict)
                 except Exception as e:
@@ -47,7 +47,7 @@ def unicode_args_substitution(func, template_renderer, **kw_dict):
         kw2 = {}
         for k, v in kw.items():
             v2 = v
-            if isinstance(v, unicode):
+            if isinstance(v, str):
                 try:
                     v2 = template_renderer(v, **kw_dict)
                 except Exception as e:
@@ -215,13 +215,6 @@ class QuestState(Node):
 # - ask(variants={True: 'Yes', False: 'None'}, text=None, title=None)
 # - log(text, position=None, dest=login|None)
 ## - like(diff=1, dest=login|None, who=None|npc|location)
-
-class QuestEndRec(Document):
-    user_id = StringField(caption='Идентификатор профиля владельца', sparse=True, identify=True)
-    quest = EmbeddedNodeField(
-        document_type='sublayers_server.model.registry_me.classes.quests.Quest',
-    )
-
 
 class Quest(Node):
     first_state     = StringField(caption='Начальное состояние', doc='Id начального состояния квеста')
@@ -559,7 +552,7 @@ class Quest(Node):
         old_status = self.status
         next_state = None
 
-        if not isinstance(new_state, basestring):
+        if not isinstance(new_state, str):
             raise TypeError('Try to set state by {new_state!r} in quest {self!r}'.format(**locals()))
 
         next_state = self.make_state(new_state)
@@ -1020,3 +1013,12 @@ class MarkerMapObject(Subdoc):
         d = super(MarkerMapObject, self).as_client_dict()
         d.update(position=self.position.as_point())
         return d
+
+
+# QuestEndRec объявлен после Quest: mongoengine 0.29 разрешает строковую ссылку
+# document_type уже при создании класса
+class QuestEndRec(Document):
+    user_id = StringField(caption='Идентификатор профиля владельца', sparse=True, identify=True)
+    quest = EmbeddedNodeField(
+        document_type='sublayers_server.model.registry_me.classes.quests.Quest',
+    )

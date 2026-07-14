@@ -17,7 +17,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import urllib
+import urllib.request
 
 
 # Defaults
@@ -104,7 +104,7 @@ class VirtualEnv(object):
         if self.is_activated:
             return # this environment is activated
         activate_this = os.path.join(self.scripts_dir, 'activate_this.py')
-        execfile(activate_this, dict(__file__=activate_this))
+        exec(compile(open(activate_this, 'rb').read(), activate_this, 'exec'), dict(__file__=activate_this))
         os.environ['VIRTUAL_ENV'] = self.path
         if not self.scripts_dir in os.getenv('PATH', ''):
             os.environ['PATH'] = os.pathsep.join(
@@ -149,7 +149,7 @@ class EZSetupInstaller(object):
         if not os.path.isfile(self.ez_setup_py):
             ez_setup_url = self.EZ_SETUP_URL
             log("download %s to %s" % (ez_setup_url, self.ez_setup_py))
-            urllib.urlretrieve(ez_setup_url, self.ez_setup_py)
+            urllib.request.urlretrieve(ez_setup_url, self.ez_setup_py)
 
 
 if __name__ == '__main__':
@@ -165,7 +165,7 @@ if __name__ == '__main__':
     try:
         main()
         sys.exit(0)
-    except Exception, e: # Catch all exceptions. pylint: disable=W0703
+    except Exception as e: # Catch all exceptions. pylint: disable=W0703
         sys.stderr.write(traceback.format_exc() if __debug__ else str(e))
         sys.exit(1)
 

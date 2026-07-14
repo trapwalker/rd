@@ -53,7 +53,7 @@ class RandomizeExamples(object):
         car_proto = random.choice(cars)
         if isinstance(car_proto, RegistryLinkField):
             pass
-        if isinstance(car_proto, basestring) or isinstance(car_proto, StringField):
+        if isinstance(car_proto, str) or isinstance(car_proto, StringField):
             car_proto = cls.registry.get(car_proto)
         if not car_proto:
             raise RandomizeCarException('Car Proto dont resolve or not found. Cars: {}'.format(cars))
@@ -61,14 +61,14 @@ class RandomizeExamples(object):
 
         # Подготовка списка оружия
         if weapons:
-            if isinstance(weapons[0], basestring) or isinstance(weapons[0], StringField):
+            if isinstance(weapons[0], str) or isinstance(weapons[0], StringField):
                 weapons = [cls.registry.get(w) for w in weapons]
         # if not weapons or not isinstance(weapons[0], Weapon):
         #     raise RandomizeCarWeaponException('Weapons list empty.')
 
         # Подготовка айтемов тюнинга
         if tuner_items:
-            if isinstance(tuner_items[0], basestring) or isinstance(tuner_items[0], StringField):
+            if isinstance(tuner_items[0], str) or isinstance(tuner_items[0], StringField):
                 tuner_items = [cls.registry.get(item) for item in tuner_items]
             # Поиск подходящих для данной машинки тюнинг айтемов
             car_node_hash = car_proto.node_hash()
@@ -89,7 +89,8 @@ class RandomizeExamples(object):
                 direction = 'F'
             else:
                 direction = random.choice(flags)
-            available_weapons = [w for w in weapons if w.weight_class <= weight]
+            # weight — строка из суффикса флагов слота ('FBLR_2' -> '2')
+            available_weapons = [w for w in weapons if w.weight_class <= int(weight)]
             if not available_weapons:
                 log.warning("Dont found available weapons for slot<%s> with weight=%s in car: %s", slot_name, weight, car_proto.uri)
                 continue
@@ -158,7 +159,8 @@ class RandomizeExamples(object):
         example_profile = agent_proto.instantiate(name='', role_class=None, **(agent_params or dict()))
         role_class = random.choice(cls.agent_role_class_list)
 
-        example_profile.set_karma(time=time, value=random.randint(karma_min, karma_max))
+        # karma_min/karma_max приходят из YAML-описаний квестов и могут быть float
+        example_profile.set_karma(time=time, value=random.randint(int(karma_min), int(karma_max)))
 
         need_points = level * 10 + random.randint(0, 9)
         exp = example_profile.exp_table.get_need_exp_by_points(need_points)
@@ -167,7 +169,7 @@ class RandomizeExamples(object):
 
         # Выбор скила, куда уйдёт бОльшая часть очков
         skills_dict = dict(driving=0, shooting=0, masking=0, leading=0, trading=0, engineering=0)
-        skill_dict_keys = skills_dict.keys()
+        skill_dict_keys = list(skills_dict.keys())
         if role_class.class_skills:
             class_target_skill = role_class.class_skills[0].target
             example_profile.set_role_class(role_class_ex=role_class, registry=cls.registry)

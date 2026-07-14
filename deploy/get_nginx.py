@@ -8,13 +8,10 @@ log = logging.getLogger(__name__)
 import re
 import os
 import shutil
-import urllib
+import urllib.request
 import zipfile
 from glob import glob
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import BytesIO
 
 
 RE_DIST_URL = re.compile(r'\/download\/nginx-([\d\.]+?)\.zip(?=")')
@@ -37,8 +34,8 @@ def version_from_str(s):
 
 
 def get_versions():
-    respond = urllib.urlopen(INDEX_URL)
-    html = respond.read()
+    respond = urllib.request.urlopen(INDEX_URL)
+    html = respond.read().decode('utf-8', errors='replace')
     versions = []
     for url in RE_DIST_URL.finditer(html):
         v = version_from_str(url.groups()[0])
@@ -93,7 +90,7 @@ def setup():
     log.debug('Last version %s: %s', v, url)
 
     log.debug('Loading dist...')
-    dist_stream = StringIO(urllib.urlopen(url).read())
+    dist_stream = BytesIO(urllib.request.urlopen(url).read())
     log.info('Dist loaded: %s bytes', len(dist_stream.getvalue()))
     #dist_stream = open(r'..\temp\nginx-1.9.14.zip', 'rb')
 

@@ -34,7 +34,7 @@ def load_locale_objects(path, *other_paths):
                 if fnmatch(f, '*.lang.yaml'):
                     fn = join(r, f)
                     with open(fn) as data_file:
-                        data = yaml.load(data_file)
+                        data = yaml.load(data_file, Loader=yaml.FullLoader)
                         locale = data.pop('locale', None)
                         _prefix = data.pop('__prefix', None)
                         if locale:
@@ -63,11 +63,11 @@ def load_locale_objects(path, *other_paths):
 
 
 def locale(lang, key):
+    # Ленивый импорт во избежание циклического импорта:
+    # localization.py импортирует site_locale на уровне модуля.
+    from sublayers_server.model.registry_me.localization import LocalizedString
     if isinstance(key, LocalizedString) or isinstance(key, dict):
         return key.get(lang, '##LANG NOT SUPPORTED##')
 
     locale_lang = locale_objects.get(lang, None)
     return locale_lang and locale_lang.get(key, key) or key
-
-
-from sublayers_server.model.registry_me.localization import LocalizedString

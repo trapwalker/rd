@@ -15,8 +15,10 @@ class MetricHolder(object):
         storage = self.storage
         if value is not None:            
             key = name + '.max'
-            if key in 
-            self.storage[] = 
+            # незаконченный код ещё со времён Python 2:
+            # if key in
+            # self.storage[] =
+            pass
         
 
 

@@ -42,10 +42,18 @@ from pprint import pprint as pp
 import os
 
 
+# Пути к данным мира — относительно этого файла, а не CWD,
+# чтобы тесты работали и из pytest (корень репо), и как скрипт.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+WORLD_PATH = os.path.normpath(os.path.join(_HERE, '../../../sublayers_world'))
+TMP_REG_PATH = os.path.normpath(os.path.join(_HERE, '../../../tmp'))
+GAME_LOCALE_PATH = os.path.normpath(os.path.join(_HERE, '../../../sublayers_common/static/locale/game'))
+
+
 def test2(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
-    #reg = get_global_registry(path='../../../tmp', reload=reload, save_loaded=save_loaded)
-    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    #reg = get_global_registry(path=TMP_REG_PATH, reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
 
     globals().update(locals())
 
@@ -53,7 +61,7 @@ def test2(reload=True, save_loaded=True):
 def test3(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
     #x = reg.make_node_by_uri('/registry/items/usable/tanks/tank_full/tank_10l')
     #a = reg.get('/registry/mobiles/cars/heavy/btrs/05_m113a1/quick')
     #q = reg.get('/registry/agents/user/quick')
@@ -99,10 +107,16 @@ def test3(reload=True, save_loaded=True):
     with T('Trader refresh'):
         tr.on_refresh(None)
 
+    class _AgentStub(object):
+        # get_trader_assortment ожидает рантайм-агента (model.agents.Agent),
+        # у которого example — это документ реестрового агента
+        def __init__(self, example):
+            self.example = example
+
     with T('Get assort TOTAL'):
-        for i in xrange(10):
+        for i in range(10):
             with T('Get assort #{}'.format(i)):
-                tr.get_trader_assortment(a)
+                tr.get_trader_assortment(_AgentStub(a))
 
     m = reg.get('/registry/institutions/mayor/whitehill_manny_askorti')
     q = m.quests[-2]
@@ -113,13 +127,20 @@ def test3(reload=True, save_loaded=True):
 
     globals().update(locals())
 
+import pytest
+
+
+@pytest.mark.skipif(
+    not os.path.isdir(os.path.join(TMP_REG_PATH, 'registry')),
+    reason='нет скретч-реестра в tmp/registry (локальные данные разработчика)',
+)
 def test4(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     #from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path='../../../tmp', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=TMP_REG_PATH, reload=reload, save_loaded=save_loaded)
     #ag = Agent.objects.filter({}).first()
 
-    #reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    #reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
     # c = reg.get('reg:///registry/mobiles/cars/light/motorcycles/honda_hornet')
     # cc = c.instantiate()
     # w = reg.get('reg:///registry/items/slot_item/armorer_item/weapons/machine_guns/dshkm_twin')
@@ -131,7 +152,7 @@ def test4(reload=True, save_loaded=True):
     globals().update(locals())
 
 
-def test_deep_reg_perfomance(node, deep=0, _tested=set()):
+def _deep_reg_perfomance(node, deep=0, _tested=set()):
     _tested.add(id(node))
     s = 1
     d = deep
@@ -139,21 +160,21 @@ def test_deep_reg_perfomance(node, deep=0, _tested=set()):
         for name, attr, getter in node.iter_attrs():
             v = getter()
             if isinstance(v, (Subdoc, list, dict)) and id(v) not in _tested:
-                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                ss, dd = _deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
                 s += ss
                 d = max(d, dd)
     elif isinstance(node, list):
         for it, v in enumerate(node):
             v = node[it]
             if id(v) not in _tested:
-                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                ss, dd = _deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
                 s += ss
                 d = max(d, dd)
     elif isinstance(node, dict):
         for it in node:
             v = node[it]
             if id(v) not in _tested:
-                ss, dd = test_deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
+                ss, dd = _deep_reg_perfomance(v, deep=deep + 1, _tested=_tested)
                 s += ss
                 d = max(d, dd)
 
@@ -164,7 +185,7 @@ def test5(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
 
     # with T('Agent load'):
     #     a = Agent.objects.filter(login='q'*13).first()
@@ -174,7 +195,7 @@ def test5(reload=True, save_loaded=True):
     a2 = a.instantiate()
 
     # with T():
-    #     for i in xrange(100):
+    #     for i in range(100):
     #         p = a.profile.instantiate()
     #c = reg.get('/registry/mobiles/cars/middle/vans/barkas_b1000kb')
     #print(c)
@@ -194,7 +215,7 @@ def test5(reload=True, save_loaded=True):
     # print(q)
 
     # with T('q.instantiate*100'):
-    #     for i in xrange(100):
+    #     for i in range(100):
     #         qq = q.instantiate()
     #         len(qq.recipient_list)
 
@@ -211,11 +232,11 @@ def test_perf(reload=True, save_loaded=True):
     import random
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
-    reg = get_global_registry(path='../../../sublayers_world', reload=reload, save_loaded=save_loaded)
+    reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
 
     _tested = set()
     with T('deep_read_test', logger=log):
-        n, deep = test_deep_reg_perfomance(reg.root, _tested=_tested)
+        n, deep = _deep_reg_perfomance(reg.root, _tested=_tested)
     log.info('N={}, D={}'.format(n, deep))
     assert n == len(_tested)
 
@@ -228,9 +249,7 @@ def test_localization(reload=True, save_loaded=True):
     import sublayers_server.model.registry_me.classes
     from sublayers_server.model.registry_me.classes.agents import Agent
     from sublayers_common.site_locale import load_locale_objects
-    WORLD_PATH = '../../../sublayers_world'
-
-    load_locale_objects('../../../sublayers_common/static/locale/game', WORLD_PATH)
+    load_locale_objects(GAME_LOCALE_PATH, WORLD_PATH)
 
     reg = get_global_registry(path=WORLD_PATH, reload=reload, save_loaded=save_loaded)
 

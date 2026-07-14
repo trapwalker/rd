@@ -31,14 +31,14 @@ class LocalizedString(EmbeddedDocument):
 
         super(LocalizedString, self).__init__(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         res = getattr(self, DEFAULT_LANG)
         if res is not None:
             return res
 
         _id = self._id
         if _id:
-            return unicode(_id)
+            return str(_id)
 
         return ''
 
@@ -98,7 +98,7 @@ class LocalizedStringField(EmbeddedDocumentField):
         super(LocalizedStringField, self).__init__(document_type=document_type, default=default, **kwargs)
 
     def to_python(self, value):
-        if isinstance(value, basestring):
+        if isinstance(value, str):
             return LocalizedString(text=value)
 
         if not isinstance(value, self.document_type):

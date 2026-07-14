@@ -53,7 +53,7 @@ def public_method(func):
     def cover(*av, **kw):
         log_call = '{method}({params})'.format(
             method=func.__name__,
-            params=', '.join(map(repr, av) + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
+            params=', '.join([repr(a) for a in av] + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
         )
         # log.info('API call: %s ...', log_call)
         try:
@@ -82,7 +82,7 @@ def basic_mode(func):
             return log.warning('Server Mode:{server_mode}. Try to call {method}({params})'.format(
                 server_mode=options.mode,
                 method=func.__name__,
-                params=', '.join(map(repr, av) + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
+                params=', '.join([repr(a) for a in av] + ['{}={!r}'.format(k, v) for k, v in kw.items()]),
             ))
         return func(*av, **kw)
     functools.update_wrapper(cover, func)

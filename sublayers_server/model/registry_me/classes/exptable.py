@@ -46,13 +46,15 @@ class ExpTable(Node):
         """
         Returns: (current_k, (next_k, next_v), rest_v)
         """
-        pairs = sorted(table, key=lambda(pair): pair.v)
+        pairs = sorted(table, key=lambda pair: pair.v)
         intervals = zip(
             [Pair(k=None, v=None)] + pairs,
             pairs + [Pair(k=None, v=None)]
         )
         for a, b in intervals:
-            if value >= a.v and (value < b.v or b.v is None):
+            # a.v/b.v равны None у краевых пар: в py2 None сравнивался
+            # с числами как «меньше всего», в py3 это TypeError
+            if (a.v is None or value >= a.v) and (b.v is None or value < b.v):
                 return a.k, (b.k, b.v), (b.v - value) if b.v is not None else None
 
     def by_exp(self, exp):

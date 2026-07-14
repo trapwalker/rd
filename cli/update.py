@@ -16,7 +16,14 @@ from cli.reg import reg_reload
 from cli.control import stop, start, save
 
 import click
-from hgapi import HgException
+
+try:
+    from hgapi import HgException
+except ImportError:
+    # Проект переведён с Mercurial на Git: hgapi опционален, без него
+    # работает всё, кроме pull/update mercurial-репозиториев.
+    class HgException(Exception):
+        exit_code = 1
 
 
 @root.group(name='update', invoke_without_command=True)

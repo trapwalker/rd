@@ -97,9 +97,9 @@ class MapLocation(Observer):
                 del new_quest
 
         # Сгенерировать квесты для этого города
-        for head, quests in self._cache_head_quests.iteritems():
+        for head, quests in self._cache_head_quests.items():
             for quest in quests:
-                for x in xrange(0, quest.generation_max_count):
+                for x in range(0, quest.generation_max_count):
                     if quest.can_instantiate(event=event, agent=agent.example, hirer=head):
                         new_quest = quest.instantiate(abstract=False, hirer=head)
                         if new_quest.generate(event=event, agent=agent.example):

@@ -4,8 +4,8 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.websocket
-from model.client_api import ClientAPI
-from model.client import Client
+from sublayers_editor.model.client_api import ClientAPI
+from sublayers_editor.model.client import Client
 
 
 class ClientSocketHandler(tornado.websocket.WebSocketHandler):

@@ -5,7 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 log.__class__.__call__ = log.__class__.info
 
-from api_tools import API, public_method
+from sublayers_editor.model.api_tools import API, public_method
 
 class ClientAPI(API):
     def __init__(self, client):

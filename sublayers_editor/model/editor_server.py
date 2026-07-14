@@ -3,12 +3,12 @@
 import logging.config
 log = logging.getLogger(__name__)
 
-from pymongo import Connection
+from pymongo import MongoClient
 from bson.objectid import ObjectId
-from tileid2 import Tileid2
-from tileid import Tileid
-from image_to_tileset import MongoDBToTilesets
-import tileset
+from sublayers_editor.model.tileid2 import Tileid2
+from sublayers_editor.model.tileid import Tileid
+from sublayers_editor.model.image_to_tileset import MongoDBToTilesets
+import sublayers_editor.model.tileset as tileset
 
 class EditorServer(object):
 
@@ -16,7 +16,7 @@ class EditorServer(object):
         self.app = app
         # подключение к базе
 
-        self.db_connection = Connection()
+        self.db_connection = MongoClient()
         self.db = self.db_connection.maindb
         #self.tss = MongoDBToTilesets(self.db.tile_sets)
 
@@ -24,7 +24,7 @@ class EditorServer(object):
         self.tss = {
         #    'wood': tileset.Tileset(open('d:/ts_scrub_12')),
         #    'water': tileset.Tileset(open('d:/ts_water_12')),
-           'road': tileset.Tileset(open('d:/tiles/ts_road_15')),
+           'road': tileset.Tileset(open('d:/tiles/ts_road_15', 'rb')),
         }
 
 
@@ -33,7 +33,7 @@ class EditorServer(object):
 
     def addObject(self, position, object_type):
         log.info('EditorServer: Add object')
-        obj = {'tileid': Tileid2(long(position['x']), long(position['y']), long(position['z'])),
+        obj = {'tileid': Tileid2(int(position['x']), int(position['y']), int(position['z'])),
                'object_type': object_type}
         self.db.geo_objects.insert(obj)
         obj['position'] = position
@@ -50,7 +50,7 @@ class EditorServer(object):
     def changeObject(self, position, id, **kw):
         log.info('EditorServer: Change object')
         obj = self.db.geo_objects.find_one({'_id': ObjectId(id)})
-        obj['tileid'] = Tileid2(long(position['x']), long(position['y']), long(position['z']))
+        obj['tileid'] = Tileid2(int(position['x']), int(position['y']), int(position['z']))
         self.db.geo_objects.save(obj)
         obj['position'] = position
         for client in self.app.clients:
@@ -58,8 +58,8 @@ class EditorServer(object):
 
     def selectAreaByRect(self, client, min_point, max_point, select_zoom):
         log.info('EditorServer: Select area by rect')
-        min_tileid = Tileid2(long(min_point['x']), long(min_point['y']), long(min_point['z'])).parent_by_lvl(select_zoom)
-        max_tileid = Tileid2(long(max_point['x']), long(max_point['y']), long(max_point['z'])).parent_by_lvl(select_zoom)
+        min_tileid = Tileid2(int(min_point['x']), int(min_point['y']), int(min_point['z'])).parent_by_lvl(select_zoom)
+        max_tileid = Tileid2(int(max_point['x']), int(max_point['y']), int(max_point['z'])).parent_by_lvl(select_zoom)
         tile_list = list(Tileid2.iter_rect(min_tileid, max_tileid))
         res = []
         for tile in tile_list:
@@ -76,8 +76,8 @@ class EditorServer(object):
         ts_res = []
 
         # todo переписать данное место. Здесь забирается информация из бд, тут сразу есть цвет
-        current_zoom = long(min_point['z'])
-        #if long(min_point['z']) > 13:
+        current_zoom = int(min_point['z'])
+        #if int(min_point['z']) > 13:
         for tile in tile_list:
             list_obj = self.db.tile_sets.find({'tileid':{'$gte': tile, '$lte': tile.index_child_last()}})
             for e in list_obj:
@@ -99,8 +99,8 @@ class EditorServer(object):
 
     def getRectsByArea(self, client, min_point, max_point, select_zoom):
         log.info('EditorServer: Send rect tiles')
-        min_tileid = Tileid2(long(min_point['x']), long(min_point['y']), long(min_point['z'])).parent_by_lvl(select_zoom)
-        max_tileid = Tileid2(long(max_point['x']), long(max_point['y']), long(max_point['z'])).parent_by_lvl(select_zoom)
+        min_tileid = Tileid2(int(min_point['x']), int(min_point['y']), int(min_point['z'])).parent_by_lvl(select_zoom)
+        max_tileid = Tileid2(int(max_point['x']), int(max_point['y']), int(max_point['z'])).parent_by_lvl(select_zoom)
         tile_list = Tileid2.iter_rect(min_tileid, max_tileid)
         res = []
         for tile in tile_list:
@@ -119,8 +119,8 @@ class EditorServer(object):
         log.info('EditorServer: Request Intersect With TS')
         res = []
         zoom = 26
-        tid = Tileid(long(point['x']), long(point['y']), long(point['z']))
-        b_tid = Tileid2(long(point['x']), long(point['y']), long(point['z'])).parent_by_lvl(17)
+        tid = Tileid(int(point['x']), int(point['y']), int(point['z']))
+        b_tid = Tileid2(int(point['x']), int(point['y']), int(point['z'])).parent_by_lvl(17)
         for key in self.tss:
             p = self.tss[key].intersect_by_ray(tid, angle, border_tid = b_tid)
             x, y, z = p[0]
@@ -128,7 +128,7 @@ class EditorServer(object):
             y = y + p[2]
             x = x * (2**(zoom-z))
             y = y * (2**(zoom-z))
-            res.append(dict(x=long(x), y=long(y), z=zoom, key=key))
+            res.append(dict(x=int(x), y=int(y), z=zoom, key=key))
         client.intersectTest(res)
 
 
@@ -136,7 +136,7 @@ if __name__ == "__main__":
 
     from random import randrange
     import time
-    from tileset import Tileset
+    from sublayers_editor.model.tileset import Tileset
 
     #srv = EditorServer(app=None)
 
@@ -145,9 +145,9 @@ if __name__ == "__main__":
     start = time.time()
 
     tss = {
-        'wood': Tileset(open('d:/ts_wood_11')),
-        'water': Tileset(open('d:/ts_water_11')),
-        'road': Tileset(open('d:/ts_road_12')),
+        'wood': Tileset(open('d:/ts_wood_11', 'rb')),
+        'water': Tileset(open('d:/ts_water_11', 'rb')),
+        'road': Tileset(open('d:/ts_road_12', 'rb')),
     }
 
     print("Loaded: ", time.time() - start, "seconds.")
@@ -164,7 +164,7 @@ if __name__ == "__main__":
 
     exper_list = []
     # формируем входныe данныe
-    for i in xrange(10000):
+    for i in range(10000):
         x = randrange(sx, fx)
         y = randrange(sy, fy)
         a = randrange(0, 6280) / 1000.

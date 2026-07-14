@@ -16,7 +16,7 @@ from tornado.httputil import url_concat
 from tornado.httpclient import HTTPClient, AsyncHTTPClient, HTTPError
 import json
 import hashlib
-import urllib
+import urllib.parse
 from tornado.options import options
 from random import randint
 import re
@@ -54,7 +54,7 @@ class LogoutHandler(BaseSiteHandler):
 # class BaseLoginHandler(BaseSiteHandler):
 #     def login_error_redirect(self, doseq=0, **kw):
 #         url = urllib.urlencode([
-#             (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
+#             (k, v.encode('utf-8') if isinstance(v, str) else str(v))
 #             for k, v in kw.items()
 #         ], doseq)
 #         self.redirect("/login?{}".format(url))  # todo: use reverse resolver
@@ -201,7 +201,7 @@ class StandardLoginHandler(BaseSiteHandler):
     # def _forum_setup(self, data):
     #     http = AsyncHTTPClient()
     #
-    #     body = urllib.urlencode({
+    #     body = urllib.parse.urlencode({
     #         "user_email": data['user_email'],
     #         "username": data['username'],
     #         "user_password": data['user_password'],
@@ -260,7 +260,7 @@ class StandardLoginHandler(BaseSiteHandler):
                 class_index is None or
                 class_node_hash is None or
                 username is None or
-                not isinstance(username, basestring) or
+                not isinstance(username, str) or
                 username == '' or
                 len(username) > 100 or
                 not username_format_ok
@@ -333,7 +333,7 @@ class StandardLoginHandler(BaseSiteHandler):
             email = user.auth.standard.email
             username = user.name
             password = user.auth.standard.password
-            if isinstance(password, unicode):
+            if isinstance(password, str):
                 password = password.encode('utf-8')
 
             # forum_id = yield self._forum_setup({
@@ -377,7 +377,7 @@ class StandardLoginHandler(BaseSiteHandler):
 #             email = user.auth.standard.email
 #             username = user.name
 #             password = user.auth.standard.password
-#             if isinstance(password, unicode):
+#             if isinstance(password, str):
 #                 password = password.encode('utf-8')
 #
 #             forum_id = yield self._forum_setup({
@@ -587,7 +587,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
 
         if code:
             http = HTTPClient()
-            body = urllib.urlencode({
+            body = urllib.parse.urlencode({
                 "redirect_uri": redirect_uri,
                 "code": code,
                 "client_id": self.settings[self._OAUTH_SETTINGS_KEY]['key'],

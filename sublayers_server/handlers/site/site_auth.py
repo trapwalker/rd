@@ -13,7 +13,7 @@ from tornado.httputil import url_concat
 from tornado.httpclient import HTTPClient
 import json
 import hashlib
-import urllib
+import urllib.parse
 
 
 class LogoutHandler(BaseHandler):
@@ -30,10 +30,10 @@ class SiteLoginHandler(BaseHandler):
 
 class BaseLoginHandler(BaseHandler):
     def login_error_redirect(self, doseq=0, **kw):
-        url = urllib.urlencode([
-            (k, v.encode('utf-8') if isinstance(v, unicode) else str(v))
-            for k, v in kw.items()
-        ], doseq)
+        url = urllib.parse.urlencode(
+            [(k, str(v)) for k, v in kw.items()],
+            doseq,
+        )
         self.redirect("/login?{}".format(url))  # todo: use reverse resolver
 
 

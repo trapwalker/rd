@@ -34,7 +34,7 @@ class Position(EmbeddedDocument):
     def as_client_dict(self):
         return dict(x=self.x, y=self.y)
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def __init__(self, *av, **kw):

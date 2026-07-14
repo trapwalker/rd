@@ -170,7 +170,7 @@ class Item(Node):
         if self.amount is not None and self.stack_size is None:
             log.warning('Item stacksize is None: {item}'.format(item=self))
 
-        if self.amount > self.stack_size:
+        if self.amount is not None and self.stack_size is not None and self.amount > self.stack_size:
             log.warning('Stack of items is owerflow: {item.amount!r}>{item.stack_size!r} in {item}'.format(item=self))
 
     def randomize_params(self, options=None):

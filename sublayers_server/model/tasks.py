@@ -52,8 +52,7 @@ class TaskInitEvent(events.Event):
             self.task.on_done(self)
 
 
-class Task(object):
-    __metaclass__ = ABCMeta
+class Task(object, metaclass=ABCMeta):
     __str_template__ = '<{self.classname} [{self.id}]>'
 
     # todo: Может быть сделать опцию, которая превращала бы таск в синглет, при старте замещающий собратьев?

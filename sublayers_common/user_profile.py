@@ -37,7 +37,7 @@ class User(Document):
                 if raw_password:
                     self.set_password(raw_password)
 
-            def __nonzero__(self):
+            def __bool__(self):
                 return bool(self.email)
 
             def set_password(self, new_password):
@@ -136,7 +136,7 @@ class User(Document):
             self.auth.steam.social_id = steam_id
 
 
-    def __nonzero__(self):
+    def __bool__(self):
         return True
 
     def check_password(self, password):
@@ -238,27 +238,27 @@ class User(Document):
 def hash_pass(password, salt=None, hash_name='sha256', splitter='$', salt_size=7, encoding='utf-8'):
     def random_salt(size):
         alphabet = '0123456789abcdef'
-        return ''.join([random.choice(alphabet) for _ in xrange(size)])
+        return ''.join([random.choice(alphabet) for _ in range(size)])
 
-    if isinstance(password, unicode):
+    if isinstance(password, str):
         password = password.encode(encoding)
     salt = salt or random_salt(size=salt_size)
     hash_func = hashlib.new(hash_name)
     hash_func.update(password)
-    hash_func.update(salt)
+    hash_func.update(salt.encode(encoding) if isinstance(salt, str) else salt)
     password_hash = hash_func.hexdigest()
     return '{hash_name}{splitter}{password_hash}{splitter}{salt}'.format(**locals())
 
 
 def test_pass(password, verification_data, encoding='utf-8'):
-    if isinstance(password, unicode):
+    if isinstance(password, str):
         password = password.encode(encoding)
-    match = re.match('(\w+)(\W)(.*)', verification_data)
+    match = re.match(r'(\w+)(\W)(.*)', verification_data)
     if match is None:
         raise ValueError('Wrong hash format, "<hash_func_name><splitter_char><hash><splitter_char><salt>" required')
     hash_name, splitter, hash_and_salt = match.groups()
     hash_digest, salt = hash_and_salt.split(splitter)
     hash_func = hashlib.new(hash_name)
     hash_func.update(password)
-    hash_func.update(salt)
+    hash_func.update(salt.encode(encoding) if isinstance(salt, str) else salt)
     return hash_digest == hash_func.hexdigest()

@@ -16,8 +16,7 @@ from uuid import uuid1 as get_uid
 # todo: fix side effect on edge of tile
 
 
-class Object(object):
-    __metaclass__ = ABCMeta
+class Object(object, metaclass=ABCMeta):
     __str_template__ = '<{self.dead_mark}{self.classname} #{self.id}>'
     _all_ids_ever = set()
 

@@ -17,7 +17,7 @@ from sublayers_server.model.registry_me.tree import (
 )
 
 from tornado.options import options
-from collections import Iterable
+from collections.abc import Iterable
 import os
 
 
@@ -71,7 +71,7 @@ class Zone(Node):
             # from sublayers_server.model.agents import AI
             # if main_agent and isinstance(main_agent, AI):
             #     pos = obj.position(time)
-            #     x, y, z = Tileid(long(pos.x), long(pos.y), 26).parent(12).xyz()
+            #     x, y, z = Tileid(int(pos.x), int(pos.y), 26).parent(12).xyz()
             #     route = main_agent.event_quest and main_agent.event_quest.dc and main_agent.event_quest.dc.route
             #     log.debug('Route %s for %s, (%s, %s)', route, main_agent, x, y)
             return
@@ -109,7 +109,7 @@ class TilesetZone(FileZone):
     def _load_from_file(self):
         file_path = os.path.join(options.world_path, self.path)
         try:
-            with open(file_path) as f:
+            with open(file_path, 'rb') as f:
                 self._ts = Tileset(f)
         except Exception as e:
             log.warning("Can not load zone %s from %r: %s", self.name, file_path, e)
@@ -120,7 +120,7 @@ class TilesetZone(FileZone):
 
     def get_value(self, obj, time):
         position = obj.position(time=time)
-        return self._ts.get_tile(Tileid(long(position.x), long(position.y), self.max_map_zoom + 8))
+        return self._ts.get_tile(Tileid(int(position.x), int(position.y), self.max_map_zoom + 8))
 
 
 class RasterZone(FileZone):
@@ -147,7 +147,7 @@ class RasterZone(FileZone):
         assert self._picker
         position = obj.position(time=time)
         mz = self.max_map_zoom + 8  # todo: speed optimization (attribute getter)
-        x, y, z = Tileid(long(position.x), long(position.y), mz).parent(mz - self._picker.pixel_depth).xyz()
+        x, y, z = Tileid(int(position.x), int(position.y), mz).parent(mz - self._picker.pixel_depth).xyz()
         value = self._picker[x, y]
         if value is None:
             return
