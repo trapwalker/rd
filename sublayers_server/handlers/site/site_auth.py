@@ -71,7 +71,10 @@ class StandardLoginHandler(BaseLoginHandler):
             return self.login_error_redirect(msg="Пользователь с таким именем уже зарегистрирован.")
 
         # todo: check username unical
-        user = User(name=username, raw_password=password, email=email).save()
+        # Автономная регистрация на движке (без сайта) не проходит онбординг
+        # сайта (nickname→settings→chip), поэтому пользователь сразу считается
+        # зарегистрированным — иначе PlayHandler не пустит его в игру.
+        user = User(name=username, raw_password=password, email=email, registration_status='register').save()
         self.set_secure_cookie("user", str(user.id))
         log.debug('User %s created sucessfully', user)
         return self.redirect("/")

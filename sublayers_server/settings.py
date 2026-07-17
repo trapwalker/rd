@@ -58,6 +58,10 @@ define("statistic_path", default='../sublayers_common/static/stat/', help="Serve
 define("quick_debug", default=False, help="quick debug flag", type=bool)
 
 define("mode", default="basic", help="server mode. available values: basic, quick", type=str)
+define("quick_play_url", default="/quick/play",
+       help="URL быстрой игры/обучения (обслуживается отдельным quick-сервером через nginx). "
+            "Пусто на одиночном dev-сервере — тогда обучение играется на этом же сервере.",
+       type=str)
 
 # mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database][?options]]
 define("db", default='mongodb://localhost/rd', help='MongoDB connection URI ("mongodb://localhost/rd" by default)', type=str)

@@ -4,6 +4,8 @@ import logging
 
 log = logging.getLogger(__name__)
 
+from tornado.options import options
+
 from sublayers_common.handlers.base import BaseHandler
 
 
@@ -50,7 +52,10 @@ class ConsoleAnswerTeachingHandler(BaseHandler):
             user.teaching_state = "map" if answer else "cancel"
             user.car_index = 2
             user.save()
-            self.finish('/quick/play' if answer else "")
+            # На одиночном dev-сервере quick_play_url пуст — обучение играется
+            # здесь же, поэтому ведём игрока на /play, а не на 404 /quick/play.
+            quick_url = options.quick_play_url or '/play'
+            self.finish(quick_url if answer else "")
         else:
             # todo: is it standard situation?
             log.warning('{} with teaching_state = {} second response Console Answer'.format(user, user.teaching_state))

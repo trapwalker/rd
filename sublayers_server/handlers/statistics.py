@@ -93,10 +93,11 @@ class ServerStatGraphicsHandler(BaseHandler):
                 yield start_date + timedelta(n)
             yield end_date
 
-        file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat.csv.*')
+        _stat_files = os.listdir(options.statistic_path) if os.path.isdir(options.statistic_path) else []
+        file_list_all = fnmatch.filter(_stat_files, 'stat.csv.*')
         file_list = []
 
-        event_file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat_events.csv.*')
+        event_file_list_all = fnmatch.filter(_stat_files, 'stat_events.csv.*')
         event_file_list = []
 
         today = date.today()
@@ -157,7 +158,8 @@ class ServerStatEventGraphicsHandler(BaseHandler):
                 yield start_date + timedelta(n)
             yield end_date
 
-        file_list_all = fnmatch.filter(os.listdir(options.statistic_path), 'stat_events.csv.*')
+        _stat_files = os.listdir(options.statistic_path) if os.path.isdir(options.statistic_path) else []
+        file_list_all = fnmatch.filter(_stat_files, 'stat_events.csv.*')
         file_list = []
         today = date.today()
 

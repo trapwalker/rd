@@ -157,7 +157,11 @@ class PlayHandler(BaseHandler):
             # todo: убрать все что касается is_tester
             if not user.quick and not user.is_tester and user.registration_status == 'register':
                 first_enter = user.teaching_state == ""  # Значит он не отвечал на вопрос про обучение
-                if user.teaching_state != "map" and user.teaching_state != "map_start":
+                # Обучение обслуживается отдельным quick-сервером (за nginx по
+                # options.quick_play_url). Если quick_play_url пуст (одиночный
+                # dev-сервер), играем обучение прямо здесь, а не редиректим в 404.
+                teaching_on_quick = bool(options.quick_play_url)
+                if (not teaching_on_quick) or (user.teaching_state != "map" and user.teaching_state != "map_start"):
                     self.render(
                         "play.html",
                         ws_port=options.ws_port,
@@ -175,7 +179,7 @@ class PlayHandler(BaseHandler):
                     )
                 else:
                     log.warning('{} with teaching_state = {} try to connect on main server'.format(user, user.teaching_state))
-                    self.redirect('/quick/play{}'.format("?mode=electron" if electron else ""))
+                    self.redirect('{}{}'.format(options.quick_play_url, "?mode=electron" if electron else ""))
             else:
                 self.redirect(self.get_login_url())
 

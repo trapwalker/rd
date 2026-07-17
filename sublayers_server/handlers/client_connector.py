@@ -33,7 +33,10 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
         self._current_ping = 0
         self.agent = None
         user = self.current_user
-        assert user
+        if user is None:
+            log.warning('Unauthorized websocket connection rejected')
+            self.close(code=4401, reason='Not authenticated')
+            return
 
         if user.is_banned:
             log.warning('%s banned before %s  (reason: %s)', user, user.ban_time, user.ban_reason)
@@ -90,10 +93,14 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
     def send(self, data):
         #log.debug('\n\nconnection.send(%s)', data)
         try:
-            # todo: Разобраться с этой странной редкой ошибкой. Почему-то дек буффера торнадо оказывается пустым
             self.write_message(data)
+        except tornado.websocket.WebSocketClosedError:
+            # Клиент отвалился между постановкой сообщения в очередь и отправкой —
+            # штатная гонка. Пробрасывать нельзя: исключение прерывало рассылку
+            # остальной очереди сообщений всем агентам в event_loop.
+            log.warning('Message to closed connection dropped (agent=%s)', self.agent)
         except Exception as e:
-            log.exception('Fucking scarry deque error (%r) with data=%r', e, data)
+            log.exception('Websocket send error (%r) with data=%r', e, data)
             raise e
 
     def _disable_ping(self):

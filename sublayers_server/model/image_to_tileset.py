@@ -132,7 +132,7 @@ if __name__ == '__main__':
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
     print(ts.level)
-    ts.save(open('d:/tiles/ts_road_z15_06-17', 'w'))
+    ts.save(open('d:/tiles/ts_road_z15_06-17', 'wb'))
 
 
     print('start zone 2')
@@ -140,7 +140,7 @@ if __name__ == '__main__':
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
     print(ts2.level)
-    ts2.save(open('d:/tiles/ts_forest_z15_06-17', 'w'))
+    ts2.save(open('d:/tiles/ts_forest_z15_06-17', 'wb'))
 
 
     print('start zone 3')
@@ -148,4 +148,4 @@ if __name__ == '__main__':
                         x_start=6021, y_start=13165, x_finish=6184, y_finish=13330,
                         color=(0, 0, 0))
     print(ts3.level)
-    ts3.save(open('d:/tiles/ts_water_z15_06-17', 'w'))
+    ts3.save(open('d:/tiles/ts_water_z15_06-17', 'wb'))

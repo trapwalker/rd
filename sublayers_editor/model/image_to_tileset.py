@@ -131,12 +131,12 @@ if __name__ == '__main__':
                         color=(0, 0, 0))
     #ts = Tileset(open('d:/ts_wood_11'))
     print(ts.level)
-    ts.save(open('d:/ts_scrub_12', 'w'))
+    ts.save(open('d:/ts_scrub_12', 'wb'))
     #TilesetToImage(ts, r"d:/temp_image3.bmp", fillcolor=(150, 150, 150), pencolor=(0, 0, 0))
     '''
     db_connection = MongoClient()
     db = db_connection.maindb
-    ts = Tileset(open('d:/tiles/ts_road_15'))
+    ts = Tileset(open('d:/tiles/ts_road_15', 'rb'))
     print(TilesetToMongoDB(ts, db.tile_sets, '#555555', 'road'))
     # ts = Tileset(open('d:/ts_water_12'))
     # print(TilesetToMongoDB(ts, db.tile_sets, '#0000FF', 'water'))

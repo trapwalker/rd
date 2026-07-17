@@ -637,7 +637,7 @@ class AgentAPI(API):
     @public_method
     def fire_discharge(self, side):
         self.agent.log.info("fire_discharge side={}".format(side))
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_discharge(side=side, time=self.agent.server.get_time())
 
@@ -645,7 +645,7 @@ class AgentAPI(API):
     def fire_auto_enable(self, enable):
         # log.debug('Car - %s, set auto fire - %s', self.car, enable)
         self.agent.log.info("fire_auto_enable enable={}".format(enable))
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
         self.car.fire_auto_enable(enable=enable, time=self.agent.server.get_time())
 
@@ -659,7 +659,7 @@ class AgentAPI(API):
     def send_slow_mine(self):
         return
         self.agent.log.info("send_slow_mine")
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
             # SlowMineStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
@@ -667,7 +667,7 @@ class AgentAPI(API):
     def send_stationary_turret(self):
         return
         self.agent.log.info("send_stationary_turret")
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
             # StationaryTurretStartEvent(starter=self.car, time=self.agent.server.get_time()).post()
 
@@ -683,7 +683,7 @@ class AgentAPI(API):
     @public_method
     def set_motion(self, x, y, cc, turn, comment=None):
         self.agent.log.info("set_motion x={} y={} cc={} turn={}".format(x, y, cc, turn))
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
         p = None
         if x and y:
@@ -693,7 +693,7 @@ class AgentAPI(API):
     @public_method
     def delete_car(self):
         self.agent.log.info("delete_car")  # todo: узнать что это за метод и где он используется
-        if self.car.limbo or not self.car.is_alive:
+        if self.car is None or self.car.limbo or not self.car.is_alive:
             return
         self.car.delete(time=self.agent.server.get_time())
 
