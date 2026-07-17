@@ -33,7 +33,7 @@ def load_locale_objects(path, *other_paths):
             for f in files:
                 if fnmatch(f, '*.lang.yaml'):
                     fn = join(r, f)
-                    with open(fn) as data_file:
+                    with open(fn, encoding='utf-8') as data_file:
                         data = yaml.load(data_file, Loader=yaml.FullLoader)
                         locale = data.pop('locale', None)
                         _prefix = data.pop('__prefix', None)

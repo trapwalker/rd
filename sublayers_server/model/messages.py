@@ -8,7 +8,7 @@ from sublayers_server.model.balance import BALANCE
 
 import math
 import os.path
-from tornado.template import Loader, Template
+from sublayers_common.template_tools import Loader, Template
 from tornado.options import options
 from ctx_timer import Timer, T
 from sublayers_common.site_locale import locale
@@ -693,16 +693,16 @@ class EnterToLocation(Message):
             svg_code_btn = ''
             svg_code_common_file = 'location_back_big.svg' if self.agent.resolution_scale == 'big' else 'location_back_small.svg'.format(lang)
             svg_code_btn_file = 'location_btn_big_{}.svg'.format(lang) if self.agent.resolution_scale == 'big' else 'location_btn_small_{}.svg'.format(lang)
-            with open(os.path.join(svg_link_common, svg_code_common_file)) as f:
+            with open(os.path.join(svg_link_common, svg_code_common_file), encoding='utf-8') as f:
                 svg_code_common = f.read()
                 svg_code_common = patch_svg_links(src=svg_code_common, pth='static/content/locations/map_locations/common/')
-            with open(os.path.join(svg_link_common, svg_code_btn_file)) as f:
+            with open(os.path.join(svg_link_common, svg_code_btn_file), encoding='utf-8') as f:
                 svg_code_btn = f.read()
                 svg_code_btn = patch_svg_links(src=svg_code_btn, pth='static/content/locations/map_locations/common/')
 
             svg_link = os.path.join(os.path.join(options.static_path, '..'), location.example.svg_link)
             svg_code = ''
-            with open(os.path.join(svg_link, 'location_{}.svg'.format(lang))) as f:
+            with open(os.path.join(svg_link, 'location_{}.svg'.format(lang)), encoding='utf-8') as f:
                 svg_code = f.read()
                 svg_code = patch_svg_links(src=svg_code, pth=(location.example.svg_link + '/'))
             location_html = ''
@@ -1157,33 +1157,33 @@ class UserExampleCarNPCTemplates(Message):
             # todo: чтение файлов с диска - не очень хорошо! Возможно закешировать!
 
             html_tuner_car = ''
-            with open(os.path.join(path_static, ex_car.tuner_car)) as f:
+            with open(os.path.join(path_static, ex_car.tuner_car), encoding='utf-8') as f:
                 html_tuner_car = f.read()
 
             armorer_sectors_svg = ''
-            with open(os.path.join(path_static, ex_car.armorer_sectors_svg)) as f:
+            with open(os.path.join(path_static, ex_car.armorer_sectors_svg), encoding='utf-8') as f:
                 armorer_sectors_svg = f.read()
 
             # механик-системы
             mechanic_engine = ''
             # todo: измерять скорость обработки, возможно закешировать по локалям
-            with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_engine), encoding='utf-8') as f:
                 mechanic_engine = f.read()
                 mechanic_engine = Template(mechanic_engine).generate(**namespace)
             mechanic_transmission = ''
-            with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_transmission), encoding='utf-8') as f:
                 mechanic_transmission = f.read()
                 mechanic_transmission = Template(mechanic_transmission).generate(**namespace)
             mechanic_brakes = ''
-            with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_brakes), encoding='utf-8') as f:
                 mechanic_brakes = f.read()
                 mechanic_brakes = Template(mechanic_brakes).generate(**namespace)
             mechanic_cooling = ''
-            with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_cooling), encoding='utf-8') as f:
                 mechanic_cooling = f.read()
                 mechanic_cooling = Template(mechanic_cooling).generate(**namespace)
             mechanic_suspension = ''
-            with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_suspension), encoding='utf-8') as f:
                 mechanic_suspension = f.read()
                 mechanic_suspension = Template(mechanic_suspension).generate(**namespace)
 
@@ -1352,33 +1352,33 @@ class UserExampleSelfMessage(UserExampleSelfShortMessage):
             # todo: чтение файлов с диска - не очень хорошо! Возможно закешировать!
 
             html_tuner_car = ''
-            with open(os.path.join(path_static, ex_car.tuner_car)) as f:
+            with open(os.path.join(path_static, ex_car.tuner_car), encoding='utf-8') as f:
                 html_tuner_car = f.read()
 
             armorer_sectors_svg = ''
-            with open(os.path.join(path_static, ex_car.armorer_sectors_svg)) as f:
+            with open(os.path.join(path_static, ex_car.armorer_sectors_svg), encoding='utf-8') as f:
                 armorer_sectors_svg = f.read()
 
             # механик-системы
             # todo: измерять скорость обработки, возможно закешировать по локалям
             mechanic_engine = ''
-            with open(os.path.join(path_static, ex_car.mechanic_engine)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_engine), encoding='utf-8') as f:
                 mechanic_engine = f.read()
                 mechanic_engine = Template(mechanic_engine).generate(**namespace)
             mechanic_transmission = ''
-            with open(os.path.join(path_static, ex_car.mechanic_transmission)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_transmission), encoding='utf-8') as f:
                 mechanic_transmission = f.read()
                 mechanic_transmission = Template(mechanic_transmission).generate(**namespace)
             mechanic_brakes = ''
-            with open(os.path.join(path_static, ex_car.mechanic_brakes)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_brakes), encoding='utf-8') as f:
                 mechanic_brakes = f.read()
                 mechanic_brakes = Template(mechanic_brakes).generate(**namespace)
             mechanic_cooling = ''
-            with open(os.path.join(path_static, ex_car.mechanic_cooling)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_cooling), encoding='utf-8') as f:
                 mechanic_cooling = f.read()
                 mechanic_cooling = Template(mechanic_cooling).generate(**namespace)
             mechanic_suspension = ''
-            with open(os.path.join(path_static, ex_car.mechanic_suspension)) as f:
+            with open(os.path.join(path_static, ex_car.mechanic_suspension), encoding='utf-8') as f:
                 mechanic_suspension = f.read()
                 mechanic_suspension = Template(mechanic_suspension).generate(**namespace)
 

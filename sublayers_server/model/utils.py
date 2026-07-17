@@ -75,6 +75,9 @@ tapir tiger seal boa duck chameleon hamster polecat tortoise chimpanzee chinchil
 def special_type_serialize_prepare(obj):
     from sublayers_server.model.vectors import Point
 
+    if isinstance(obj, bytes):
+        # страховка от py2-артефактов: bytes в json превращались бы в "b'...'"
+        return obj.decode('utf-8', errors='replace')
     if isinstance(obj, datetime):
         return obj.isoformat()
     elif isinstance(obj, (Point, complex)):

@@ -9,6 +9,7 @@ from sublayers_common.creater_agent import create_agent
 from sublayers_common.site_locale import locale
 
 import tornado.template
+from sublayers_common import template_tools
 #from tornado.httpclient import AsyncHTTPClient
 from functools import partial
 
@@ -42,7 +43,7 @@ class BaseSiteHandler(BaseHandler):
             user_info['karma'] = agent_example.profile.karma_name(lang=self.user_lang)
             # Не формировать темплейт пользователя, пока не установлен ролевой класс
             if agent_example.profile.role_class:
-                template_agent_info = tornado.template.Loader(
+                template_agent_info = template_tools.Loader(
                     "../sublayers_server/templates/person",
                     namespace=self.get_template_namespace()
                 ).load("person_site_info.html")
@@ -63,7 +64,7 @@ class BaseSiteHandler(BaseHandler):
             except:
                 pass
 
-            template_img = tornado.template.Loader(
+            template_img = template_tools.Loader(
                 "../sublayers_server/templates/site",
                 namespace=self.get_template_namespace()
             ).load("car_info_ext_wrap.html")
@@ -79,7 +80,7 @@ class BaseSiteHandler(BaseHandler):
     def _get_quick_game(self):
         car_templates_list = []
         # todo: Extract path to settings
-        template_car = tornado.template.Loader(
+        template_car = template_tools.Loader(
             "../sublayers_server/templates/site",
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")

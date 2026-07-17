@@ -382,7 +382,8 @@ class RLResolveMixin(object):
                 expanded_value = expanded_value[:len(expanded_value) - skip_count]
         elif isinstance(field, DictField):
             expanded_value = value
-            for k, v in value.items():
+            # list(): внутри цикла возможен del по ключу
+            for k, v in list(value.items()):
                 if v is not None:
                     new_v = self._resolve_field_value(field.field, v)
                     if new_v is None:
@@ -677,7 +678,8 @@ class Subdoc(RLResolveMixin, EmbeddedDocument, SubdocToolsMixin, metaclass=NodeM
                 expanded_value = expanded_value[:len(expanded_value) - skip_count]
         elif isinstance(field, DictField):
             expanded_value = value
-            for k, v in value.items():
+            # list(): внутри цикла возможен del по ключу
+            for k, v in list(value.items()):
                 if v is not None:
                     new_v = self._expand_field_value(field.field, v)
                     if new_v is None:
@@ -1204,7 +1206,7 @@ class Registry(Document):
                 and fnmatch(p, '*.yaml')
                 and not fnmatch(p, '*.lang.yaml')
             ):
-                with open(p) as attr_file:
+                with open(p, encoding='utf-8') as attr_file:
                     try:
                         d = yaml_tools.load(attr_file) or {}
                     except yaml_tools.YAMLError as e:

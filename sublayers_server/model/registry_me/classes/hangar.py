@@ -9,7 +9,7 @@ from sublayers_server.model.registry_me.classes.poi import Institution
 from sublayers_server.model.registry_me.tree import (Subdoc, IntField, FloatField, ListField, EmbeddedDocumentField,
                                                      RegistryLinkField,)
 from sublayers_server.model.messages import HangarAddLotMessage, HangarDelLotMessage
-from tornado.template import Loader
+from sublayers_common.template_tools import Loader
 
 
 class CarLotRefreshEvent(Event):

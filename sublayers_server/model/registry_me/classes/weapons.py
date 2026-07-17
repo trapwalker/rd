@@ -12,7 +12,7 @@ from sublayers_server.model.registry_me.tree import (
 
 from math import floor
 
-from tornado.template import Template
+from sublayers_common.template_tools import Template
 
 
 class RocketLauncher(ArmorerItem):

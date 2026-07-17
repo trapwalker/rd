@@ -175,10 +175,7 @@ class Application(BaseApplication):
         try:
             self.listen(options.port)
         except socket.error as e:
-            if os.name == 'nt':
-                _message = str(e).decode('cp1251', errors='ignore')
-            else:
-                _message = e
+            _message = str(e)
 
             _message = '{} port: {}'.format(_message, options.port)
             try:

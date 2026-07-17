@@ -11,6 +11,7 @@ import copy
 
 
 import pickle
+import io
 
 
 # bin встроен начиная с Python 2.6 (py25patch больше не нужен)
@@ -300,6 +301,13 @@ class Tileset(object):
     def load(self, f):
         '''Загрузка маски покрытия из файлового объекта f.'''
         assert f.read(len(SIGNATURE)) == SIGNATURE, 'Данный формат файла не поддерживается.'
+        data = f.read()
+        if data.startswith(b'(dp') and b'\r\n' in data[:64]:
+            # Легаси-файл, записанный py2 на Windows в текстовом режиме:
+            # каждый \n превратился в \r\n. Обратная замена слева направо
+            # однозначно восстанавливает исходный байтовый поток.
+            data = data.replace(b'\r\n', b'\n')
+        f = io.BytesIO(data)
         d_decode = pickle.load(f) # todo: обработка ошибок
         self._maxlevel = 0
         self._level = d_decode.pop('__level__')
@@ -548,7 +556,7 @@ def count_in_tree(tree, value, nodeClasses=(list, tuple)):
 ##############################################################################
 if __name__ == '__main__':
     from sublayers_server.model.image_to_tileset import TilesetToImage, ImageToTileset
-    ts = Tileset(open('d:/ts'))
+    ts = Tileset(open('d:/ts', 'rb'))
 
     '''
     #ts = Tileset()

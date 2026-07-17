@@ -451,7 +451,7 @@ class LocalServer(Server):
     def dump(self):
         from sublayers_common import yaml_tools
         import codecs
-        with open('srv_dump.yaml', 'w') as f:
+        with open('srv_dump.yaml', 'w', encoding='utf-8') as f:
             yaml_tools.dump(self, stream=f)
 
         with codecs.open('srv_dump.yaml', 'r', encoding='utf-8') as f:

@@ -6,7 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 from mongoengine import EmbeddedDocument, EmbeddedDocumentField, StringField
-from tornado.template import Template
+from sublayers_common.template_tools import Template
 
 from sublayers_common.site_locale import locale, locales_by_key, locale_objects
 

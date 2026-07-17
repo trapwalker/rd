@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import tornado.template
+from sublayers_common import template_tools
 
 from sublayers_common.user_profile import User
 from sublayers_common.handlers.base import BaseHandler
@@ -93,7 +94,7 @@ class APIGetUserInfoHandler(BaseHandler):
                 user_info['class'] = agent.example.profile.role_class.description
             user_info['karma'] = '138'
 
-            template_agent_info = tornado.template.Loader(
+            template_agent_info = template_tools.Loader(
                     "templates/person",
                     namespace=self.get_template_namespace()
             ).load("person_site_info.html")
@@ -106,7 +107,7 @@ class APIGetUserInfoHandler(BaseHandler):
                 name_car = ex_car.name_car
                 user_info['position'] = ex_car.position.as_tuple()
 
-            template_img = tornado.template.Loader(
+            template_img = template_tools.Loader(
                 "templates/site",
                 namespace=self.get_template_namespace()
             ).load("car_info_ext_wrap.html")
@@ -145,10 +146,14 @@ class APIGetQuickGameCarsHandler(BaseHandler):
     def get(self):
         log.error('Error! Site API called!')
 
-        car_examples = self.application.srv.quick_game_cars_examples
+        car_examples = getattr(self.application.srv, 'quick_game_cars_examples', None)
+        if car_examples is None:
+            # Прототипы машинок быстрой игры есть только на quick-сервере
+            self.send_error(404, reason='Quick game cars are available on quick server only')
+            return
         car_templates_list = []
 
-        template_car = tornado.template.Loader(
+        template_car = template_tools.Loader(
             "templates/site",
             namespace=self.get_template_namespace()
         ).load("car_info_ext_wrap.html")

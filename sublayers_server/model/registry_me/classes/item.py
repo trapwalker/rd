@@ -4,7 +4,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
-from tornado.template import Template
+from sublayers_common.template_tools import Template
 from sublayers_common.site_locale import locale
 from sublayers_server.model.registry_me.tree import (
     Node, Subdoc, IntField, FloatField, StringField, ListField, EmbeddedDocumentField, RegistryLinkField,

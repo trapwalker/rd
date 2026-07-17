@@ -83,6 +83,11 @@ class AuthHandlerMixin(TimeMeasuredHandler):
         if not user_id:
             return
 
+        if isinstance(user_id, bytes):
+            # tornado в py3 возвращает значение secure cookie как bytes,
+            # а ObjectId ожидает hex-строку
+            user_id = user_id.decode('ascii', errors='replace')
+
         # todo: cache users; invalidate cache by changes from site and quick server in teaching mode
         # todo: or isolate changes of site and teaching mode to separate documents
         try:

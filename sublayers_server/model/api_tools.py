@@ -151,7 +151,8 @@ class API(object):
 
     def __rpc_call__(self, message):
         try:
-            call_info = json.loads(message, encoding="utf-8")
+            # параметр encoding у json.loads удалён в Python 3.9
+            call_info = json.loads(message)
         except Exception as e:
             msg = "Can't parse JSON message {!r}: {!r}".format(message, e)
             log.error(msg)

@@ -25,7 +25,7 @@ class NewsManager(object):
         os.chdir('static_site')
         os.chdir('news')
         for news_file_name in filter(lambda x: x.endswith('.yaml'), os.listdir('.')):
-            news_file = open(news_file_name, 'r')
+            news_file = open(news_file_name, 'r', encoding='utf-8')
             news_list.append(yaml.load(news_file, Loader=yaml.FullLoader))
             news_file.close()
         os.chdir(serv_dir)

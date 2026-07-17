@@ -9,7 +9,7 @@ from smtplib import SMTP, SMTPRecipientsRefused
 from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from tornado.options import options
-from tornado.template import Template
+from sublayers_common.template_tools import Template
 
 from ctx_timer import T
 
@@ -111,7 +111,7 @@ class Email(object):
                 for k, v in self.__dict__.items()
                 if v is not None
             )),
-        ).encode(getattr(sys.stdout, 'encoding', None) or 'utf-8', errors='replace')
+        )
 
     def as_rfc_message(self):
         '''

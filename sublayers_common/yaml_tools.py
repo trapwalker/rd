@@ -24,7 +24,9 @@ def represent_str(self, data):
 CompactDumper.add_representer(str, represent_str)
 
 
-def dump(data, stream=None, Dumper=CompactDumper, allow_unicode=True, encoding='utf-8', **kw):
+def dump(data, stream=None, Dumper=CompactDumper, allow_unicode=True, encoding=None, **kw):
+    # encoding=None: в py3 дамп идёт строкой (str) в текстовый поток;
+    # encoding='utf-8' заставил бы PyYAML выдавать bytes и ломал бы запись
     return yaml.dump(data, stream=stream, Dumper=Dumper, allow_unicode=allow_unicode, encoding=encoding, **kw)
 
 
@@ -35,10 +37,10 @@ def save_to_file(data, f, indent=2, format='yaml'):
             dump(data, s, indent=indent)
         elif format in {'json', 'j', 'JSON', 'J', 'Json'}:
             from bson import json_util
-            s.write(json_util.dumps(data, ensure_ascii=False, indent=indent).encode('utf-8'))
+            s.write(json_util.dumps(data, ensure_ascii=False, indent=indent))
 
     if isinstance(f, str):
-        with open(f, 'w') as stream:
+        with open(f, 'w', encoding='utf-8') as stream:
             _save(stream)
     elif hasattr(f, 'write'):
         _save(f)

@@ -5,7 +5,7 @@ log = logging.getLogger(__name__)
 
 from sublayers_server.model.registry_me.classes.item import Item
 from sublayers_server.model.messages import ArcadeTextMessage
-from tornado.template import Template
+from sublayers_common.template_tools import Template
 from sublayers_server.model.registry_me.tree import (
     Subdoc, 
     StringField, ListField, IntField, FloatField, EmbeddedDocumentField, DateTimeField,

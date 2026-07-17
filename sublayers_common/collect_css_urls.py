@@ -25,7 +25,7 @@ def search_in_file(src='.', mask='*.css', recursive=True):
         return RE_URL.findall(data)
     elif os.path.isfile(src) and mask(src):
         #print('filename', src)
-        with open(src) as f:
+        with open(src, encoding='utf-8') as f:
             data = f.read()
         return RE_URL.findall(data)
     elif os.path.isdir(src) and recursive:
