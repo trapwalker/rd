@@ -53,7 +53,13 @@ services:
     environment:
       - MONGODB_URL=mongodb://admin:admin_password@mongodb:27017/rd?authSource=admin
       - REDIS_URL=redis://redis:6379/0
-      - SECRET_KEY=your-secret-key-change-in-production
+      # No SECRET_KEY here on purpose: app/config.py's validator rejects this
+      # exact placeholder string outright (blocks the literal
+      # "your-secret-key-change-in-production" everywhere, not just prod),
+      # so setting it crashed every dev container on startup. Leaving it
+      # unset lets Settings.secret_key's default_factory auto-generate a
+      # random one - fine for dev, where a fresh key each restart isn't a
+      # problem.
       - ENVIRONMENT=development
       - DEBUG=true
       - LOG_LEVEL=DEBUG
