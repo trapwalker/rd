@@ -572,61 +572,61 @@ function initRadioPlayer() {
         name: 'p1',
         channels: {
             'r_ch0_128': {
-                link: "http://listen.radiotower.su:8000/vigilante_2084_128",
+                link: "https://listen.radiotower.su/vigilante_2084_128",
                 name: "Vigilante 2084",
                 screen_class: 'vigilante',
                 logo_url: '/static/img/radio/vigilante_2084.png'
             },
             'r_ch0_320': {
-                link: "http://listen.radiotower.su:8000/vigilante_2084_320",
+                link: "https://listen.radiotower.su/vigilante_2084_320",
                 name: "Vigilante 2084",
                 screen_class: 'vigilante',
                 logo_url: '/static/img/radio/vigilante_2084.png'
             },
             'r_ch1_128': {
-                link: "http://listen.radiotower.su:8000/lonesome_town_128",
+                link: "https://listen.radiotower.su/lonesome_town_128",
                 name: "Lonesome Town",
                 screen_class: 'town',
                 logo_url: '/static/img/radio/lonesome_town.png'
             },
             'r_ch1_320': {
-                link: "http://listen.radiotower.su:8000/lonesome_town_320",
+                link: "https://listen.radiotower.su/lonesome_town_320",
                 name: "Lonesome Town",
                 screen_class: 'town',
                 logo_url: '/static/img/radio/lonesome_town.png'
             },
             'r_ch2_128': {
-                link: "http://listen.radiotower.su:8000/mad_dog_fm_128",
+                link: "https://listen.radiotower.su/mad_dog_fm_128",
                 name: "Mad Dog FM",
                 screen_class: 'maddog',
                 logo_url: '/static/img/radio/mad_dog_fm.png'
             },
             'r_ch2_320': {
-                link: "http://listen.radiotower.su:8000/mad_dog_fm_320",
+                link: "https://listen.radiotower.su/mad_dog_fm_320",
                 name: "Mad Dog FM",
                 screen_class: 'maddog',
                 logo_url: '/static/img/radio/mad_dog_fm.png'
             },
             'r_ch3_128': {
-                link: "http://listen.radiotower.su:8000/rrn_radio_128",
+                link: "https://listen.radiotower.su/rrn_radio_128",
                 name: "RRN Radio",
                 screen_class: 'rrn',
                 logo_url: '/static/img/radio/rrn_radio.png'
             },
             'r_ch3_320': {
-                link: "http://listen.radiotower.su:8000/rrn_radio_320",
+                link: "https://listen.radiotower.su/rrn_radio_320",
                 name: "RRN Radio",
                 screen_class: 'rrn',
                 logo_url: '/static/img/radio/rrn_radio.png'
             },
             'r_ch4_128': {
-                link: "http://listen.radiotower.su:8000/industrial_junk_128",
+                link: "https://listen.radiotower.su/industrial_junk_128",
                 name: "Industrial Junk",
                 screen_class: 'junk',
                 logo_url: '/static/img/radio/industrial_junk.png'
             },
             'r_ch4_320': {
-                link: "http://listen.radiotower.su:8000/industrial_junk_320",
+                link: "https://listen.radiotower.su/industrial_junk_320",
                 name: "Industrial Junk",
                 screen_class: 'junk',
                 logo_url: '/static/img/radio/industrial_junk.png'

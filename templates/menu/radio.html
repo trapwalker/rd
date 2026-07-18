@@ -3,12 +3,377 @@
 {% block title %}Radio{% endblock %}
 {% block menu_title %}📻 Radio{% endblock %}
 
+{% block extra_styles %}
+.radio-player {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.radio-now-playing {
+    background-color: #111111;
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 12px 15px;
+}
+
+.radio-station-name {
+    color: #ff6b00;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.radio-track-title {
+    color: #ccc;
+    font-size: 13px;
+    margin-top: 4px;
+    min-height: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.radio-stations {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.radio-station-btn {
+    background-color: #333;
+    border: 2px solid #555;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+
+.radio-station-btn:hover {
+    border-color: #ff6b00;
+}
+
+.radio-station-btn.active {
+    background-color: #ff6b00;
+    border-color: #ff6b00;
+    font-weight: bold;
+}
+
+.radio-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+}
+
+.radio-controls .menu-button {
+    margin: 0;
+    min-width: 90px;
+}
+
+.radio-quality-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.radio-volume-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #ccc;
+}
+
+.radio-volume-label input[type="range"] {
+    width: 120px;
+}
+
+.radio-status {
+    font-size: 12px;
+    color: #999;
+}
+
+.radio-status.radio-status-error {
+    color: #ff5555;
+}
+
+.radio-attribution {
+    font-size: 12px;
+    color: #888;
+}
+
+.radio-attribution a {
+    color: #ff6b00;
+    text-decoration: none;
+}
+
+.radio-attribution a:hover {
+    text-decoration: underline;
+}
+{% endblock %}
+
 {% block content %}
 <div class="menu-section">
-    <h3 class="section-title">Communications</h3>
-    <div class="info-box">
-        <p>In-game radio and communication system</p>
-        <p style="color: #999; margin-top: 10px;">Coming soon...</p>
+    <h3 class="section-title">Radiotower.su</h3>
+    <div class="info-box radio-player" id="radioPlayer">
+        <div class="radio-now-playing">
+            <div class="radio-station-name" id="radioStationName">-</div>
+            <div class="radio-track-title" id="radioTrackTitle">Press Play to start listening</div>
+        </div>
+
+        <div class="radio-stations" id="radioStations"></div>
+
+        <div class="radio-controls">
+            <button class="menu-button" id="radioPlayBtn" type="button">Play</button>
+            <button class="menu-button" id="radioMuteBtn" type="button">Mute</button>
+            <label class="radio-quality-label">
+                <input type="checkbox" id="radioQualityToggle"> High quality (320 kbps)
+            </label>
+            <label class="radio-volume-label">
+                Volume
+                <input type="range" id="radioVolume" min="0" max="100" value="60">
+            </label>
+        </div>
+
+        <div class="radio-status" id="radioStatus">Stopped</div>
+
+        <div class="radio-attribution">
+            Streaming courtesy of <a href="https://radiotower.su" target="_blank" rel="noopener noreferrer">radiotower.su</a>
+        </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    "use strict";
+
+    // Radiotower.su is an independent internet-radio service that has always
+    // been associated with Road Dogs. It exposes an Icecast server at
+    // listen.radiotower.su; each station is published at two bitrates.
+    var STATIONS = [
+        {id: "vigilante_2084", name: "Vigilante 2084"},
+        {id: "lonesome_town", name: "Lonesome Town"},
+        {id: "mad_dog_fm", name: "Mad Dog FM"},
+        {id: "rrn_radio", name: "RRN Radio"},
+        {id: "industrial_junk", name: "Industrial Junk"}
+    ];
+    var STREAM_BASE = "https://listen.radiotower.su/";
+    var STATUS_URL = "https://listen.radiotower.su/status-json.xsl";
+    var STORAGE_KEY = "rd_radio_settings";
+    var META_POLL_MS = 20000;
+
+    var audio = new Audio();
+    audio.preload = "none";
+
+    var els = {
+        stations: document.getElementById("radioStations"),
+        stationName: document.getElementById("radioStationName"),
+        trackTitle: document.getElementById("radioTrackTitle"),
+        playBtn: document.getElementById("radioPlayBtn"),
+        muteBtn: document.getElementById("radioMuteBtn"),
+        quality: document.getElementById("radioQualityToggle"),
+        volume: document.getElementById("radioVolume"),
+        status: document.getElementById("radioStatus")
+    };
+
+    function loadSettings() {
+        var defaults = {stationId: STATIONS[0].id, quality: "128", volume: 60, muted: false};
+        try {
+            var raw = window.localStorage.getItem(STORAGE_KEY);
+            if (!raw) return defaults;
+            var parsed = JSON.parse(raw);
+            return {
+                stationId: STATIONS.some(function (s) { return s.id === parsed.stationId; }) ? parsed.stationId : defaults.stationId,
+                quality: parsed.quality === "320" ? "320" : "128",
+                volume: (typeof parsed.volume === "number" && parsed.volume >= 0 && parsed.volume <= 100) ? parsed.volume : defaults.volume,
+                muted: !!parsed.muted
+            };
+        } catch (e) {
+            return defaults;
+        }
+    }
+
+    function saveSettings() {
+        try {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+            // localStorage unavailable (private mode, etc.) - not fatal
+        }
+    }
+
+    var state = loadSettings();
+    var playing = false;
+    var metaTimer = null;
+
+    function streamUrl(stationId, quality) {
+        return STREAM_BASE + stationId + "_" + quality;
+    }
+
+    function currentStation() {
+        var found = null;
+        STATIONS.forEach(function (s) {
+            if (s.id === state.stationId) found = s;
+        });
+        return found || STATIONS[0];
+    }
+
+    function renderStations() {
+        els.stations.innerHTML = "";
+        STATIONS.forEach(function (station) {
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "radio-station-btn" + (station.id === state.stationId ? " active" : "");
+            btn.textContent = station.name;
+            btn.addEventListener("click", function () {
+                selectStation(station.id);
+            });
+            els.stations.appendChild(btn);
+        });
+    }
+
+    function selectStation(stationId) {
+        if (state.stationId === stationId && playing) return;
+        state.stationId = stationId;
+        saveSettings();
+        renderStations();
+        els.stationName.textContent = currentStation().name;
+        els.trackTitle.textContent = "Press Play to start listening";
+        if (playing) startPlayback();
+    }
+
+    function setStatus(text, isError) {
+        els.status.textContent = text;
+        els.status.className = "radio-status" + (isError ? " radio-status-error" : "");
+    }
+
+    function startPlayback() {
+        var station = currentStation();
+        audio.src = streamUrl(station.id, state.quality);
+        setStatus("Connecting...");
+        var playPromise = audio.play();
+        if (playPromise && typeof playPromise.then === "function") {
+            playPromise.then(function () {
+                playing = true;
+                els.playBtn.textContent = "Pause";
+                setStatus("Playing " + station.name + " (" + state.quality + " kbps)");
+                schedulePolling();
+            }).catch(function (err) {
+                playing = false;
+                els.playBtn.textContent = "Play";
+                setStatus("Playback blocked - click Play again", true);
+            });
+        } else {
+            playing = true;
+            els.playBtn.textContent = "Pause";
+        }
+    }
+
+    function stopPlayback() {
+        audio.pause();
+        audio.removeAttribute("src");
+        audio.load();
+        playing = false;
+        els.playBtn.textContent = "Play";
+        setStatus("Stopped");
+        els.trackTitle.textContent = "Press Play to start listening";
+        stopPolling();
+    }
+
+    function togglePlay() {
+        if (playing) {
+            stopPlayback();
+        } else {
+            startPlayback();
+        }
+    }
+
+    function toggleMute() {
+        state.muted = !state.muted;
+        audio.muted = state.muted;
+        els.muteBtn.textContent = state.muted ? "Unmute" : "Mute";
+        saveSettings();
+    }
+
+    function onQualityChange() {
+        state.quality = els.quality.checked ? "320" : "128";
+        saveSettings();
+        if (playing) startPlayback();
+    }
+
+    function onVolumeChange() {
+        state.volume = parseInt(els.volume.value, 10) || 0;
+        audio.volume = state.volume / 100;
+        saveSettings();
+    }
+
+    function fetchNowPlaying() {
+        if (!playing || typeof window.fetch !== "function") return;
+        var station = currentStation();
+        var mount = station.id + "_" + state.quality;
+        fetch(STATUS_URL, {cache: "no-store"})
+            .then(function (resp) { return resp.ok ? resp.json() : null; })
+            .then(function (data) {
+                if (!data || !playing) return;
+                var sources = data.icestats && data.icestats.source;
+                if (!sources) return;
+                if (!Array.isArray(sources)) sources = [sources];
+                var match = null;
+                sources.forEach(function (src) {
+                    if (src.listenurl && src.listenurl.indexOf(mount) !== -1) match = src;
+                });
+                if (match && match.title) {
+                    els.trackTitle.textContent = match.title;
+                }
+            })
+            .catch(function () {
+                // Metadata is best-effort; playback keeps working without it
+            });
+    }
+
+    function schedulePolling() {
+        stopPolling();
+        fetchNowPlaying();
+        metaTimer = window.setInterval(fetchNowPlaying, META_POLL_MS);
+    }
+
+    function stopPolling() {
+        if (metaTimer) {
+            window.clearInterval(metaTimer);
+            metaTimer = null;
+        }
+    }
+
+    audio.addEventListener("error", function () {
+        if (playing) {
+            playing = false;
+            els.playBtn.textContent = "Play";
+            setStatus("Stream error - try again", true);
+            stopPolling();
+        }
+    });
+
+    els.playBtn.addEventListener("click", togglePlay);
+    els.muteBtn.addEventListener("click", toggleMute);
+    els.quality.addEventListener("change", onQualityChange);
+    els.volume.addEventListener("input", onVolumeChange);
+
+    // Initial UI state from saved settings. Playback never starts
+    // automatically - browsers block unprompted audio autoplay, and the
+    // player only begins streaming on an explicit user click.
+    renderStations();
+    els.stationName.textContent = currentStation().name;
+    els.quality.checked = state.quality === "320";
+    els.volume.value = state.volume;
+    audio.volume = state.volume / 100;
+    audio.muted = state.muted;
+    els.muteBtn.textContent = state.muted ? "Unmute" : "Mute";
+})();
+</script>
 {% endblock %}
