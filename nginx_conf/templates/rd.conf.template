@@ -64,7 +64,7 @@ server {
         proxy_read_timeout 180;
     }
 
-    location ~ ^/(login|logout|email_confirm|get_user_info)$ {
+    location ~ ^/(login|logout|email_confirm)$ {
         proxy_pass $site_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
