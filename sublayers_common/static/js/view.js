@@ -28,7 +28,11 @@ $(document).ready(function () {
     user = new User(1);
     ownerList = new OwnerList();
 
-    ws_connector = new WSConnector({url: (location.protocol == "https:" ? "wss://" : "ws://") + location.hostname + $('#settings_server_mode_link_path').text() + '/ws'});
+    // location.host (not .hostname) - .hostname silently drops the port, which sent
+    // this ws connection to the default port 80/443 instead of wherever nginx (or the
+    // dev server) actually listens, e.g. ws://localhost/quick/ws instead of
+    // ws://localhost:8080/quick/ws.
+    ws_connector = new WSConnector({url: (location.protocol == "https:" ? "wss://" : "ws://") + location.host + $('#settings_server_mode_link_path').text() + '/ws'});
 
     rpcCallList = new RPCCallList();
 

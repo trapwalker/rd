@@ -28,8 +28,8 @@ docker-compose ps
 ```
 
 3. **Access the application**:
-- API: http://localhost:8000
-- API Documentation: http://localhost:8000/docs
+- New FastAPI stack: http://localhost:8000 (API docs: http://localhost:8000/docs)
+- Legacy stack (game/site/quick), through nginx: http://localhost:8080/play
 - MongoDB: localhost:27017
 - Redis: localhost:6379
 
@@ -40,6 +40,58 @@ docker-compose down
 # Remove volumes (clean database)
 docker-compose down -v
 ```
+
+## Legacy Tornado Stack + Nginx (no CDN)
+
+RoadDogs is mid-migration (see `CLAUDE.md`): the legacy Tornado game still
+runs alongside the new FastAPI app. `docker-compose up` now also starts:
+
+| Service | Image/target | Command | Reachable at |
+|---|---|---|---|
+| `game-engine` | `development` | `engine_server.py --mode=basic` | via nginx only |
+| `site-server` | `development` | `site_server.py` | via nginx only |
+| `quick-engine` | `development` | `engine_server_quick.py --mode=quick` | via nginx only |
+| `nginx` | `nginx:1.27-alpine` | templated config | `http://localhost:${NGINX_HTTP_PORT:-8080}` |
+
+`game-engine`/`site-server`/`quick-engine` are **not** published to the host -
+nginx is the only entry point, exactly like production. This intentionally
+mirrors the historical bare-metal layout at `nginx_conf/sites-available/rd.conf`
+(kept as reference for non-Docker deploys), just pointed at Docker service
+names instead of `127.0.0.1:<port>`.
+
+### No CDN: tiles are served from the same machine
+
+`/map`, `/static` and `/audio` are served by nginx directly from disk (see the
+`nginx` service's volume mounts and `nginx_conf/templates/rd.conf.template`) -
+no external CDN involved. URL convention: a request to
+`/map/{layer}/{z}/{x}/{y}.png` is served from
+`sublayers_world/tiles/map/{layer}/{z}/{x}/{y}.png`.
+
+**Caveat:** the actual map tile imagery (`back`/`front`/`merged` PNG pyramids)
+and audio files aren't in this repo - `sublayers_world/tiles/map/` and
+`audio_static/` only contain placeholders today. The serving mechanism is
+ready; you still need to drop the real tile/audio data into those folders
+(or their mounted equivalents) for the map to render and audio to play.
+
+### One place to change a port
+
+Backend ports/hosts live in `.env` (`GAME_ENGINE_PORT`, `SITE_PORT`,
+`QUICK_PORT`, `GAME_ENGINE_HOST`, `SITE_HOST`, `QUICK_HOST`,
+`NGINX_HTTP_PORT`) and are consumed both by the backend service's own
+`--port`/`--ws_port` CLI argument and by nginx's `proxy_pass` upstream in the
+same template - change the value once in `.env`, both sides follow. The
+`map_link` a page renders is always an origin-relative path (`/map`, never
+`http://host:port/map`), so it works unchanged whichever port nginx is
+published on - no host/port to keep in sync there at all. See
+`sublayers_server/settings.py` (`map_link` option) and
+`sublayers_common/static/js/slippy_map.js` (client-side fallback).
+
+### Only nginx is exposed on port 80/8080
+
+`NGINX_HTTP_PORT` defaults to `8080` in dev so it doesn't clash with anything
+else already bound to `:80` on your machine; set it to `80` for a real VDS
+(see `docker-compose.prod.yml`, which also switches Mongo credentials from
+the dev placeholder to `${MONGO_ROOT_USER}`/`${MONGO_ROOT_PASSWORD}`).
 
 ## Development Workflow
 

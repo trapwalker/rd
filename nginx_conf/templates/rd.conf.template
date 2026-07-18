@@ -1,0 +1,119 @@
+# Docker-native nginx config for RoadDogs (dev and prod use the same template).
+#
+# Rendered by the official nginx:alpine entrypoint: any *.template file under
+# /etc/nginx/templates/ is passed through `envsubst` (restricted to variables that
+# are actually set in the container's environment) into /etc/nginx/conf.d/ at
+# startup. See docker-compose.yml for how GAME_ENGINE_HOST/PORT, SITE_HOST/PORT
+# and QUICK_HOST/PORT are set - change a port there, not here.
+#
+# This mirrors the historical bare-metal config at
+# nginx_conf/sites-available/rd.conf, parameterized for Docker service names
+# instead of hardcoded 127.0.0.1:<port>. That file remains the reference for
+# non-Docker (plain systemd) deployments.
+#
+# No CDN: /map, /static and /audio are all served directly from disk on this
+# same machine/container - see the volume mounts on the `nginx` service.
+
+server {
+    listen 80;
+    server_name _;
+
+    # Map tiles. URL convention: /map/{layer}/{z}/{x}/{y}.png ->
+    # sublayers_world/tiles/map/{layer}/{z}/{x}/{y}.png (mounted at /srv/world_tiles/map).
+    location ^~ /map/ {
+        root /srv/world_tiles;
+        if ($query_string) {
+            expires max;
+        }
+    }
+
+    location ^~ /static/ {
+        add_header Access-Control-Allow-Origin *;
+        root /srv/static_root;
+        if ($query_string) {
+            expires max;
+        }
+    }
+
+    location ^~ /audio/ {
+        root /srv/audio_root;
+        if ($query_string) {
+            expires max;
+        }
+    }
+
+    # Site server: landing page + auth
+    location = / {
+        proxy_pass http://${SITE_HOST}:${SITE_PORT}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 120;
+        proxy_send_timeout 120;
+        proxy_read_timeout 180;
+    }
+
+    location ~ ^/(login|logout|email_confirm|get_user_info)$ {
+        proxy_pass http://${SITE_HOST}:${SITE_PORT};
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 120;
+        proxy_send_timeout 120;
+        proxy_read_timeout 180;
+    }
+
+    location /site_api/ {
+        proxy_pass http://${SITE_HOST}:${SITE_PORT}/site_api/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 120;
+        proxy_send_timeout 120;
+        proxy_read_timeout 180;
+    }
+
+    # Quick engine: tutorial / fast-respawn mode
+    location = /quick/ws {
+        proxy_pass http://${QUICK_HOST}:${QUICK_PORT}/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 120s;
+    }
+
+    location /quick/ {
+        proxy_pass http://${QUICK_HOST}:${QUICK_PORT}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+    }
+
+    # Main game engine (basic mode): WebSocket + catch-all
+    location = /ws {
+        proxy_pass http://${GAME_ENGINE_HOST}:${GAME_ENGINE_PORT};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_read_timeout 120s;
+    }
+
+    location / {
+        proxy_pass http://${GAME_ENGINE_HOST}:${GAME_ENGINE_PORT}/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_connect_timeout 120;
+        proxy_send_timeout 120;
+        proxy_read_timeout 180;
+    }
+
+    error_page 502 503 504 /50x.html;
+    location = /50x.html {
+        root /srv/static_root/static;
+    }
+}

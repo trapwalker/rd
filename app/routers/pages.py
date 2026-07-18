@@ -159,7 +159,7 @@ async def play_handler(
         {
             "request": request,
             "ws_port": settings.port,  # WebSocket port
-            "map_link": "/static/map",  # Map resource link
+            "map_link": "/map",  # Map tiles: served by nginx (or the /map static mount below) from sublayers_world/tiles/map
             "server_mode": settings.environment,
             "host_name": host,
             "user_name": user.username,
@@ -201,7 +201,7 @@ async def _handle_basic_mode(
                 {
                     "request": request,
                     "ws_port": settings.port,
-                    "map_link": "/static/map",
+                    "map_link": "/map",
                     "server_mode": "basic",
                     "host_name": request.url.hostname or "",
                     "user_name": user.username,
@@ -264,7 +264,7 @@ async def _handle_quick_mode(
         {
             "request": request,
             "ws_port": settings.port,
-            "map_link": "/static/map",
+            "map_link": "/map",
             "server_mode": "quick",
             "host_name": request.url.hostname or "",
             "user_name": user.username,
@@ -304,7 +304,7 @@ async def mobile_play_handler(
         {
             "request": request,
             "ws_port": settings.port,
-            "map_link": "/static/map",
+            "map_link": "/map",
             "host_name": request.url.hostname or "",
         }
     )

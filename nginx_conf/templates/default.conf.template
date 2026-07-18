@@ -1,0 +1,6 @@
+# Intentionally empty. The nginx:alpine base image ships its own
+# /etc/nginx/conf.d/default.conf (a catch-all "listen 80 default_server;"
+# block serving /usr/share/nginx/html) which conflicts with rd.conf.template
+# below - both listen on :80, and the stock one was winning for anything but
+# `location = /`. This file's rendered output overwrites that stock config
+# with nothing, leaving rd.conf.template as the only active server block.

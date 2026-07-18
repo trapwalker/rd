@@ -7,9 +7,10 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install uv
+# Install uv (the installer's target dir has moved between versions - .cargo/bin
+# historically, .local/bin on newer releases - so put both on PATH)
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
-ENV PATH="/root/.cargo/bin:${PATH}"
+ENV PATH="/root/.local/bin:/root/.cargo/bin:${PATH}"
 
 WORKDIR /app
 
@@ -20,9 +21,13 @@ FROM base AS development
 # Copy dependency files
 COPY pyproject.toml .
 COPY requirements.txt* ./
+COPY src/ctx-timer ./src/ctx-timer
 
 # Install all dependencies (including dev)
 RUN uv pip install --system -r pyproject.toml --all-extras
+# ctx_timer is this project's own package (src/ctx-timer), not on PyPI - legacy
+# Tornado servers (sublayers_server, sublayers_site) import it directly.
+RUN uv pip install --system -e src/ctx-timer/
 
 # Copy application code
 COPY . .
@@ -41,8 +46,11 @@ FROM base AS builder
 COPY pyproject.toml .
 COPY requirements.txt* ./
 
-# Install production dependencies only
-RUN uv pip install --system -r pyproject.toml --no-dev
+# Install production dependencies only (plain `uv pip install -r pyproject.toml`
+# already excludes dev/optional extras unless --all-extras is passed, so this
+# is production-only by default; `--no-dev` here is a uv-sync-only flag that
+# `uv pip install` rejects outright)
+RUN uv pip install --system -r pyproject.toml
 
 # Copy application code
 COPY app ./app

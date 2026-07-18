@@ -14,12 +14,24 @@ dependencies = [
 
     # Database (Async MongoDB)
     "motor>=3.6.0",
-    "beanie>=1.27.0",
+    # Pinned <2.0: beanie 2.x replaced the Motor-based client entirely (now
+    # wraps pymongo's native async API instead) and breaks
+    # app/database.py's `init_beanie` call (`AsyncIOMotorClient` object is
+    # not what it expects) - app/ is written against the 1.x Motor API.
+    "beanie>=1.27.0,<2.0.0",
     "pymongo>=4.6.0",
+
+    # Cache / rate limiting
+    # app/main.py imports redis.asyncio - never declared, so every prod
+    # build silently fell back to in-memory rate limiting.
+    "redis>=5.0.0",
 
     # Data Validation & Serialization
     "pydantic>=2.10.0",
     "pydantic-settings>=2.6.0",
+    # Required at import time by pydantic.EmailStr (app/models/user.py) -
+    # pydantic only declares it as an optional extra, doesn't vendor it.
+    "email-validator>=2.0.0",
 
     # Authentication & Security
     "python-jose[cryptography]>=3.3.0",
@@ -40,6 +52,10 @@ dependencies = [
     "tornado>=6.4",
     "mongoengine>=0.28.0",
     "six>=1.17.0",
+    # sublayers_world/registry/quests/class_quests/get_class_car_quest imports
+    # setuptools.command.test at module load time (deprecated stub, but the
+    # registry won't import without the package present at all)
+    "setuptools>=61.0",
 ]
 
 [project.optional-dependencies]

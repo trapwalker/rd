@@ -46,7 +46,7 @@ define("template_path", default=_rel("templates"), help="path to static files", 
 define("pidfile", default=None, help="filename for pid store", type=str)
 define("port", default=80, help="run on the given port", type=int)
 define("ws_port", default=80, help="run ws on the given port", type=int)
-define("map_link", default='http://localhost/map', help="map link", type=str)
+define("map_link", default='/map', help="Map tiles URL (origin-relative by default: nginx serves it from the same host/port as the page, no need to keep host/port in sync here)", type=str)
 
 define("disconnect_timeout", default=60, help="Timeout of displacing by disconnect.", type=int)
 

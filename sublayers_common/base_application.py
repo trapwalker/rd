@@ -47,11 +47,10 @@ class BaseApplication(tornado.web.Application):
             log.warning("Can't get project verion info: %s", e)
 
         dsn = urlparse(options.db)
-        self.dba = mongoengine.connect(
-            db=dsn.path.lstrip('/'),
-            host=dsn.hostname,
-            port=dsn.port,
-        )
+        # Pass the full URI so mongoengine picks up username/password/authSource
+        # from it too - building the connection from dsn.hostname/dsn.port alone
+        # silently drops credentials, which breaks against an auth-enabled Mongo.
+        self.dba = mongoengine.connect(host=options.db)
         self.db = MongoClient(options.db)[dsn.path.lstrip('/')]
 
         log.info('=-' * 25)

@@ -4,7 +4,9 @@
         var slippymap = function (options) {
             var $, map, defaults, property;
             $ = window;
-            var map_link = jQuery("#settings_map_link").text() || "https://eu.roaddogs.online/map";
+            // Same-origin fallback: never silently fall back to the production CDN from a
+            // dev/test box just because the server forgot to render #settings_map_link.
+            var map_link = jQuery("#settings_map_link").text() || "/map";
             defaults = {
                 div: "map",
                 fullscreen : true,

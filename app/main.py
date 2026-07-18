@@ -134,6 +134,18 @@ def create_app() -> FastAPI:
     except RuntimeError:
         logger.warning(f"Static directory not found: {settings.static_path}")
 
+    # Mount map tiles (same convention as the legacy nginx config: /map -> sublayers_world/tiles/map).
+    # In production this path is normally served directly by nginx; mounting it here too means
+    # `uvicorn app.main:app` alone (no nginx in front) still serves tiles correctly in dev.
+    try:
+        app.mount(
+            "/map",
+            StaticFiles(directory=f"{settings.world_path}/tiles/map"),
+            name="map",
+        )
+    except RuntimeError:
+        logger.warning(f"Map tiles directory not found: {settings.world_path}/tiles/map")
+
     # Include routers
     from app.routers import (
         admin,

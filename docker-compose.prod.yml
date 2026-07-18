@@ -15,12 +15,16 @@ services:
       - /var/lib/mongodb/data:/data/db
       - /var/lib/mongodb/config:/data/configdb
       - ./backups:/backups
-    command: mongod --auth
+    # --wiredTigerCacheSizeGB caps Mongo's default cache (~50% of host RAM,
+    # min 256M) - left alone it would grab ~0.9G on a 1.8G box on its own.
+    command: mongod --auth --wiredTigerCacheSizeGB 0.25
 
   # Redis with persistence
   redis:
     restart: always
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    # maxmemory bounds RSS growth on a memory-starved host; allkeys-lru evicts
+    # instead of growing unbounded once the cache fills up.
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD} --maxmemory 128mb --maxmemory-policy allkeys-lru
     volumes:
       - /var/lib/redis/data:/data
 
@@ -45,33 +49,77 @@ services:
       - ./logs:/app/logs
       - ./sublayers_common/static:/app/sublayers_common/static:ro
     deploy:
-      replicas: 2
+      # 1 replica: a single vCPU host gets no real extra throughput from a
+      # second ASGI replica, just double the memory reservation.
+      replicas: 1
       resources:
         limits:
           cpus: '1'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
           memory: 512M
-    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 --no-access-log
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2 --no-access-log
 
-  # Nginx with SSL
+  # --- Legacy Tornado stack: same images as dev, no live source bind-mount,
+  # real Mongo credentials from the VDS .env instead of the dev placeholder.
+  game-engine:
+    restart: always
+    command: >
+      python engine_server.py --mode=basic
+      --port=${GAME_ENGINE_PORT:-8000}
+      --ws_port=${GAME_ENGINE_PORT:-8000}
+      --db=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE:-rd}?authSource=admin
+      --map_link=/map
+      --debug=false
+    volumes: []
+
+  site-server:
+    restart: always
+    command: >
+      python site_server.py
+      --port=${SITE_PORT:-8001}
+      --db=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE:-rd}?authSource=admin
+    volumes: []
+
+  quick-engine:
+    restart: always
+    command: >
+      python engine_server_quick.py --mode=quick
+      --port=${QUICK_PORT:-8005}
+      --ws_port=${QUICK_PORT:-8005}
+      --db=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DATABASE:-rd}?authSource=admin
+      --map_link=/map
+    volumes: []
+
+  # Nginx: same templated config as dev (nginx_conf/templates/rd.conf.template).
+  # No host port published here - this VDS runs a shared nginx-proxy
+  # (managed outside this repo, see nginx_conf/deploy/rd.sublayers.net.conf)
+  # that owns :80/:443 for every site on the box and TLS-terminates. It
+  # reaches this container by its container_name (rd_nginx) over the
+  # external `rd_web` network created once on the host with
+  # `docker network create rd_web`.
   nginx:
     restart: always
-    ports:
-      - "80:80"
-      - "443:443"
+    # No `ports:` override here on purpose - see docker-compose.yml's
+    # NGINX_BIND/NGINX_HTTP_PORT vars (compose concatenates `ports:` lists
+    # across -f files rather than replacing them, so overriding it here
+    # would just add a second published port instead of replacing the dev
+    # default). Set NGINX_BIND=127.0.0.1 in .env instead.
+    networks:
+      - rd_network
+      - rd_web
     volumes:
-      - ./nginx_conf/nginx.prod.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx_conf/conf.d:/etc/nginx/conf.d:ro
-      - ./sublayers_common/static:/usr/share/nginx/html/static:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro  # Let's Encrypt certificates
+      - ./nginx_conf/templates:/etc/nginx/templates:ro
+      - ./sublayers_world/tiles:/srv/world_tiles:ro
+      - ./sublayers_common:/srv/static_root:ro
+      - ./audio_static:/srv/audio_root:ro
       - ./logs/nginx:/var/log/nginx
     deploy:
       resources:
         limits:
           cpus: '0.5'
-          memory: 256M
+          memory: 128M
 
   # Log aggregator (optional)
   # loki:
@@ -95,3 +143,11 @@ services:
 volumes:
   loki_data:
   prometheus_data:
+
+# rd_web: pre-existing external network the host's shared nginx-proxy also
+# joins - create it once per host with `docker network create rd_web`
+# before the first `up` (see nginx_conf/deploy/rd.sublayers.net.conf).
+networks:
+  rd_network:
+  rd_web:
+    external: true

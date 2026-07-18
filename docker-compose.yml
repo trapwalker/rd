@@ -18,9 +18,12 @@ services:
     networks:
       - rd_network
     healthcheck:
+      # mongosh is a Node.js client - cold-starting it for the check can take
+      # several seconds under CPU contention (e.g. a single-vCPU host), well
+      # past a 5s timeout, even though mongod itself is responsive.
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
       interval: 10s
-      timeout: 5s
+      timeout: 15s
       retries: 5
 
   # Redis cache (for future use)
@@ -70,25 +73,107 @@ services:
       - rd_network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-  # Nginx reverse proxy (optional, for production)
-  nginx:
-    image: nginx:alpine
-    container_name: rd_nginx
+  # --- Legacy Tornado stack (being phased out, still the live game today) ---
+  # Same image as `app` (development target = full source tree + full deps,
+  # including tornado/mongoengine) - only the command differs per service.
+  game-engine:
+    build:
+      context: .
+      target: development
+    container_name: rd_game_engine
     restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
+    working_dir: /app/sublayers_server
+    environment:
+      - GAME_ENGINE_PORT=${GAME_ENGINE_PORT:-8000}
+    command: >
+      python engine_server.py --mode=basic
+      --port=${GAME_ENGINE_PORT:-8000}
+      --ws_port=${GAME_ENGINE_PORT:-8000}
+      --db=mongodb://admin:admin_password@mongodb:27017/rd?authSource=admin
+      --map_link=/map
     volumes:
-      - ./nginx_conf/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx_conf/conf.d:/etc/nginx/conf.d:ro
-      - ./sublayers_common/static:/usr/share/nginx/html/static:ro
-      # - ./ssl:/etc/nginx/ssl:ro  # For HTTPS certificates
+      - .:/app
     depends_on:
-      - app
+      mongodb:
+        condition: service_healthy
     networks:
       - rd_network
-    profiles:
-      - production
+
+  site-server:
+    build:
+      context: .
+      target: development
+    container_name: rd_site_server
+    restart: unless-stopped
+    working_dir: /app/sublayers_site
+    command: >
+      python site_server.py
+      --port=${SITE_PORT:-8001}
+      --db=mongodb://admin:admin_password@mongodb:27017/rd?authSource=admin
+    volumes:
+      - .:/app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - rd_network
+
+  quick-engine:
+    build:
+      context: .
+      target: development
+    container_name: rd_quick_engine
+    restart: unless-stopped
+    working_dir: /app/sublayers_server
+    command: >
+      python engine_server_quick.py --mode=quick
+      --port=${QUICK_PORT:-8005}
+      --ws_port=${QUICK_PORT:-8005}
+      --db=mongodb://admin:admin_password@mongodb:27017/rd?authSource=admin
+      --map_link=/map
+    volumes:
+      - .:/app
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - rd_network
+
+  # Nginx: entry point for the legacy stack, no CDN - serves /map, /static,
+  # /audio straight from disk and reverse-proxies everything else to
+  # game-engine/site-server/quick-engine above. Only this service is
+  # published to the host; the three backends are reached by their Docker DNS
+  # names on the internal network only. The new FastAPI stack (`app`) is
+  # unaffected and stays reachable directly on its own published port.
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: rd_nginx
+    restart: unless-stopped
+    # NGINX_BIND lets a prod .env restrict this to 127.0.0.1 (see
+    # docker-compose.prod.yml / nginx_conf/deploy) without needing to
+    # override the `ports:` list itself - compose merges port lists across
+    # -f files by concatenation, not override, so a second `ports:` entry
+    # in an override file would add to this one rather than replace it.
+    ports:
+      - "${NGINX_BIND:-0.0.0.0}:${NGINX_HTTP_PORT:-8080}:80"
+    environment:
+      - GAME_ENGINE_HOST=${GAME_ENGINE_HOST:-game-engine}
+      - GAME_ENGINE_PORT=${GAME_ENGINE_PORT:-8000}
+      - SITE_HOST=${SITE_HOST:-site-server}
+      - SITE_PORT=${SITE_PORT:-8001}
+      - QUICK_HOST=${QUICK_HOST:-quick-engine}
+      - QUICK_PORT=${QUICK_PORT:-8005}
+    volumes:
+      - ./nginx_conf/templates:/etc/nginx/templates:ro
+      - ./sublayers_world/tiles:/srv/world_tiles:ro
+      - ./sublayers_common:/srv/static_root:ro
+      - ./audio_static:/srv/audio_root:ro
+    depends_on:
+      - game-engine
+      - site-server
+      - quick-engine
+    networks:
+      - rd_network
 
 networks:
   rd_network:
