@@ -74,7 +74,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_backend"
 
 [tool.setuptools]
-packages = ["cli", "sublayers_common", "sublayers_server", "sublayers_site", "sublayers_editor", "sublayers_admin", "tile_converter"]
+packages = ["cli", "sublayers_common", "sublayers_server", "sublayers_site", "sublayers_editor", "tile_converter"]
 
 [tool.ruff]
 line-length = 120

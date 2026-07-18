@@ -1,1 +1,0 @@
-python.bat admin.py %*
