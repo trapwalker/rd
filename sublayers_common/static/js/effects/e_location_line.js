@@ -1,6 +1,6 @@
-var constDisplayLineSpeed = 0.0005;    // смещение линии в частях за мс
-var constDisplayLineDelay = 5;         // задержка в секундах между линиями
-var constDisplayLineWidth = 200;       // ширина линии
+var constDisplayLineSpeed = 0.0005;    // СЃРјРµС‰РµРЅРёРµ Р»РёРЅРёРё РІ С‡Р°СЃС‚СЏС… Р·Р° РјСЃ
+var constDisplayLineDelay = 5;         // Р·Р°РґРµСЂР¶РєР° РІ СЃРµРєСѓРЅРґР°С… РјРµР¶РґСѓ Р»РёРЅРёСЏРјРё
+var constDisplayLineWidth = 200;       // С€РёСЂРёРЅР° Р»РёРЅРёРё
 
 var ECanvasLocationLine = (function(){
     function ECanvasLocationLine() {

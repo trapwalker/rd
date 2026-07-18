@@ -1,6 +1,6 @@
-var constDisplayRipplingSpeed = 0.0001;     // смещение линий в частях за мс
-var constDisplayRipplingWidth = 200;      // ширина линии
-var constDisplayRipplingOpacity = 0.03;   // минимальная прозрачность мерцания
+var constDisplayRipplingSpeed = 0.0001;     // СЃРјРµС‰РµРЅРёРµ Р»РёРЅРёР№ РІ С‡Р°СЃС‚СЏС… Р·Р° РјСЃ
+var constDisplayRipplingWidth = 200;      // С€РёСЂРёРЅР° Р»РёРЅРёРё
+var constDisplayRipplingOpacity = 0.03;   // РјРёРЅРёРјР°Р»СЊРЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РјРµСЂС†Р°РЅРёСЏ
 
 var ECanvasLocationWave = (function() {
     function ECanvasLocationWave() {

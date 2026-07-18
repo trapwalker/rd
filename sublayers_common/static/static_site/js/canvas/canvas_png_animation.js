@@ -4,8 +4,8 @@ var ECanvasChipAnimation = (function () {
         this.img = image_obj;
         this.frame_count = 16;
         this.time_of_frame = this.duration / this.frame_count;
-        this.frame_height = 322; // размер одного кадра
-        this.frame_width = 515; // размер одного кадра
+        this.frame_height = 322; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
+        this.frame_width = 515; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
         this.start_time = 0;
         this.next_random_delay = 3000;
         this.offset_x = 0;
@@ -15,11 +15,11 @@ var ECanvasChipAnimation = (function () {
     }
 
     ECanvasChipAnimation.prototype._get_frame_num = function (time) {
-        var time_off = time - this.start_time; // время, прошедшее сначала анимации
+        var time_off = time - this.start_time; // РІСЂРµРјСЏ, РїСЂРѕС€РµРґС€РµРµ СЃРЅР°С‡Р°Р»Р° Р°РЅРёРјР°С†РёРё
         time_off = time_off < 0 ? 0 : time_off;
         if (time_off > this.duration + this.next_random_delay) {
             this.start_time = time;
-            this.next_random_delay = 4000 + Math.random() * 6000; // Рандомно от 4 до 10 секунд
+            this.next_random_delay = 4000 + Math.random() * 6000; // Р Р°РЅРґРѕРјРЅРѕ РѕС‚ 4 РґРѕ 10 СЃРµРєСѓРЅРґ
             return 0;
         }
         var frame = Math.floor(time_off / this.time_of_frame);

@@ -1,5 +1,5 @@
 /*
- * Виджет для отрисовки области видимости машинки
+ * Р’РёРґР¶РµС‚ РґР»СЏ РѕС‚СЂРёСЃРѕРІРєРё РѕР±Р»Р°СЃС‚Рё РІРёРґРёРјРѕСЃС‚Рё РјР°С€РёРЅРєРё
  */
 
 var WObservingRange = (function (_super) {
@@ -24,7 +24,7 @@ var WObservingRange = (function (_super) {
 
         for (var i = 0; i < this._model_objects.length; i++) {
             var car = this._model_objects[i];
-            var car_pos = car.getCurrentCoord(time);  // положение машинки
+            var car_pos = car.getCurrentCoord(time);  // РїРѕР»РѕР¶РµРЅРёРµ РјР°С€РёРЅРєРё
             var outher_radius = car.getObservingRange(time) / zoom_koeff;
             var car_ctx_pos = mulScalVector(subVector(car_pos, map_tl), 1.0 / zoom_koeff);
 

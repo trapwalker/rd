@@ -213,10 +213,10 @@ var MapCanvasManager = (function(_super){
 
         this.zoom_koeff = mapManager.getZoomKoeff();
 
-        // Старый вариант - рабочий, но немного расходится с картой
+        // РЎС‚Р°СЂС‹Р№ РІР°СЂРёР°РЅС‚ - СЂР°Р±РѕС‡РёР№, РЅРѕ РЅРµРјРЅРѕРіРѕ СЂР°СЃС…РѕРґРёС‚СЃСЏ СЃ РєР°СЂС‚РѕР№
         // this.zoom_koeff = Math.pow(2., (ConstMaxMapZoom - this.real_zoom));
 
-        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Эта точка соответствует 0,0 на канвасе
+        this.map_tl = mapManager.getTopLeftCoords(this.real_zoom);  // Р­С‚Р° С‚РѕС‡РєР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ 0,0 РЅР° РєР°РЅРІР°СЃРµ
         var car_pos = user.userCar ? user.userCar.getCurrentCoord(time) : new Point(0, 0);
         var car_ctx_pos = mulScalVector(subVector(car_pos, this.map_tl), 1.0 / this.zoom_koeff);
         this.cur_ctx_car_pos = car_ctx_pos;

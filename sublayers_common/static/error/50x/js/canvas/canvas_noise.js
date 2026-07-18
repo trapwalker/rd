@@ -1,7 +1,7 @@
-var constFlashTickCount = 30;           // количество тиков перерисовки отведенное на мерцание
-var constNotFlashTickCount = 1200;      // количество тиков перерисовки без мерцания
-var constMainNoiseOpacity = 0.36;       // базовая прозрачность шума
-var constFlashNoiseOpacity = 1;         // верхний предел прозрачности шума во время вспышки
+var constFlashTickCount = 30;           // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРєРѕРІ РїРµСЂРµСЂРёСЃРѕРІРєРё РѕС‚РІРµРґРµРЅРЅРѕРµ РЅР° РјРµСЂС†Р°РЅРёРµ
+var constNotFlashTickCount = 1200;      // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРєРѕРІ РїРµСЂРµСЂРёСЃРѕРІРєРё Р±РµР· РјРµСЂС†Р°РЅРёСЏ
+var constMainNoiseOpacity = 0.36;       // Р±Р°Р·РѕРІР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ С€СѓРјР°
+var constFlashNoiseOpacity = 1;         // РІРµСЂС…РЅРёР№ РїСЂРµРґРµР» РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё С€СѓРјР° РІРѕ РІСЂРµРјСЏ РІСЃРїС‹С€РєРё
 
 var CanvasNoise = (function(){
     function CanvasNoise() {

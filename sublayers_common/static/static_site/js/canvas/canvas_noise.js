@@ -1,7 +1,7 @@
-var constFlashTickCount = 30;           // количество тиков перерисовки отведенное на мерцание
-var constNotFlashTickCount = 1200;      // количество тиков перерисовки без мерцания
-var constMainNoiseOpacity = 0.36;       // базовая прозрачность шума
-var constFlashNoiseOpacity = 1;         // верхний предел прозрачности шума во время вспышки
+var constFlashTickCount = 30;           // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРєРѕРІ РїРµСЂРµСЂРёСЃРѕРІРєРё РѕС‚РІРµРґРµРЅРЅРѕРµ РЅР° РјРµСЂС†Р°РЅРёРµ
+var constNotFlashTickCount = 1200;      // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РёРєРѕРІ РїРµСЂРµСЂРёСЃРѕРІРєРё Р±РµР· РјРµСЂС†Р°РЅРёСЏ
+var constMainNoiseOpacity = 0.36;       // Р±Р°Р·РѕРІР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ С€СѓРјР°
+var constFlashNoiseOpacity = 1;         // РІРµСЂС…РЅРёР№ РїСЂРµРґРµР» РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё С€СѓРјР° РІРѕ РІСЂРµРјСЏ РІСЃРїС‹С€РєРё
 
 var CanvasNoise = (function(){
     function CanvasNoise() {
@@ -45,7 +45,7 @@ var CanvasNoise = (function(){
         if (this.state < 0) context.globalAlpha = constMainNoiseOpacity;
         if (this.state < -constNotFlashTickCount) this.state = constFlashTickCount;
         this.state --;
-        // todo: не факт, что предсоздание паттернов работает. Но вроде работает
+        // todo: РЅРµ С„Р°РєС‚, С‡С‚Рѕ РїСЂРµРґСЃРѕР·РґР°РЅРёРµ РїР°С‚С‚РµСЂРЅРѕРІ СЂР°Р±РѕС‚Р°РµС‚. РќРѕ РІСЂРѕРґРµ СЂР°Р±РѕС‚Р°РµС‚
         //context.fillStyle = context.createPattern(this.img[Math.floor(Math.random() * this.img.length - 0.001)], "repeat");
         context.fillStyle = this.patterns[Math.floor(Math.random() * this.patterns.length - 0.001)];
         context.fillRect(0, 0, canvasManager.width, canvasManager.height);

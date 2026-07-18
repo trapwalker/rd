@@ -26,32 +26,32 @@ var TimeManager = (function () {
         this.timerStart();
     }
 
-    // Получение текущего времени в миллисекундах
+    // РџРѕР»СѓС‡РµРЅРёРµ С‚РµРєСѓС‰РµРіРѕ РІСЂРµРјРµРЅРё РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…
     TimeManager.prototype.getTime = function () {
         return new Date().getTime();
     };
 
-    // ТАЙМЕР
+    // РўРђР™РњР•Р 
 
-    // Запуск таймера
+    // Р—Р°РїСѓСЃРє С‚Р°Р№РјРµСЂР°
     TimeManager.prototype.timerStart = function (delay) {
         //console.log('TimeManager.prototype.timerStart');
         delay = delay || 0;
         setTimeout(function() { timeManager._timer = timeManager._interval_perform(); }, delay);
     };
 
-    // Остановка таймера
+    // РћСЃС‚Р°РЅРѕРІРєР° С‚Р°Р№РјРµСЂР°
     TimeManager.prototype.timerStop = function () {
         //console.log('TimeManager.prototype.timerStop');
         window.cancelAnimationFrame(this._timer);
     };
 
-    // Функция таймера
+    // Р¤СѓРЅРєС†РёСЏ С‚Р°Р№РјРµСЂР°
     TimeManager.prototype._interval_perform = function () {
         //console.log('TimeManager.prototype._interval_perform');
         var time = timeManager.getTime();
 
-        // Основной проход
+        // РћСЃРЅРѕРІРЅРѕР№ РїСЂРѕС…РѕРґ
         var list = timeManager._timer_list;
         for (var i = 0; i < list.length; i++)
             list[i].obj[list[i].method](time);
@@ -59,7 +59,7 @@ var TimeManager = (function () {
         return requestAnimationFrame(timeManager._interval_perform);
     };
 
-    // Добавление ивента таймера
+    // Р”РѕР±Р°РІР»РµРЅРёРµ РёРІРµРЅС‚Р° С‚Р°Р№РјРµСЂР°
     TimeManager.prototype.addTimerEvent = function (obj, method) {
         if (!obj || typeof(obj[method]) != 'function')
             return;
@@ -69,21 +69,21 @@ var TimeManager = (function () {
         this._timer_list.push({obj: obj, method: method})
     };
 
-    // Удаление ивента таймера
+    // РЈРґР°Р»РµРЅРёРµ РёРІРµРЅС‚Р° С‚Р°Р№РјРµСЂР°
     TimeManager.prototype.delTimerEvent = function (obj, method) {
         for (var i = this._timer_list.length - 1; i >= 0; i--)
             if ((this._timer_list[i].obj == obj) && (!method || (this._timer_list[i].method == method)))
                 this._timer_list.splice(i, 1);
     };
 
-    // Удаление подписчика со всеми его ивентами таймера
+    // РЈРґР°Р»РµРЅРёРµ РїРѕРґРїРёСЃС‡РёРєР° СЃРѕ РІСЃРµРјРё РµРіРѕ РёРІРµРЅС‚Р°РјРё С‚Р°Р№РјРµСЂР°
     TimeManager.prototype.delObjectFromTimer = function (obj) {
         this.delTimeoutEvent(obj, null);
     };
 
-    // ТАЙМАУТ
+    // РўРђР™РњРђРЈРў
 
-    // Добавление ивента таймаута
+    // Р”РѕР±Р°РІР»РµРЅРёРµ РёРІРµРЅС‚Р° С‚Р°Р№РјР°СѓС‚Р°
     TimeManager.prototype.addTimeoutEvent = function (obj, method, time) {
         if (!(obj && typeof(obj[method]) === 'function'))
             return null;
@@ -95,7 +95,7 @@ var TimeManager = (function () {
         return event;
     };
 
-    // Удаление ивента таймаута
+    // РЈРґР°Р»РµРЅРёРµ РёРІРµРЅС‚Р° С‚Р°Р№РјР°СѓС‚Р°
     TimeManager.prototype.delTimeoutEvent = function (event) {
         if (event)  event.alive = false;
     };

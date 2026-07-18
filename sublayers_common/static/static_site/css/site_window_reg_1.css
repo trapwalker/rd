@@ -106,7 +106,7 @@
 .reg1-btn-back { left: 8px; }
 .reg1-btn-next { right: 9px; width: calc(23% - 1px); }
 
-/* Медиа Запросы для разрешения 1366 */
+/* РњРµРґРёР° Р—Р°РїСЂРѕСЃС‹ РґР»СЏ СЂР°Р·СЂРµС€РµРЅРёСЏ 1366 */
 
 @media screen and (max-width: 1366px), screen and (max-height: 800px) {
     .window-reg1-main {

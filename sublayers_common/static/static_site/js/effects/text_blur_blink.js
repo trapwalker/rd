@@ -1,4 +1,4 @@
-var constTextBlurDelay = 50;         // время смены яркости шрифта
+var constTextBlurDelay = 50;         // РІСЂРµРјСЏ СЃРјРµРЅС‹ СЏСЂРєРѕСЃС‚Рё С€СЂРёС„С‚Р°
 
 
 var TextBlurBlink = (function(){
@@ -24,8 +24,8 @@ var textBlurBlink;
 
 
 
-var constTextBlurDelayMax = 10000;        // время смены яркости шрифта
-var constTextBlurDelayMin = 5000;         // время смены яркости шрифта
+var constTextBlurDelayMax = 10000;        // РІСЂРµРјСЏ СЃРјРµРЅС‹ СЏСЂРєРѕСЃС‚Рё С€СЂРёС„С‚Р°
+var constTextBlurDelayMin = 5000;         // РІСЂРµРјСЏ СЃРјРµРЅС‹ СЏСЂРєРѕСЃС‚Рё С€СЂРёС„С‚Р°
 
 var TextBlurBlink2 = (function(){
     function TextBlurBlink2() {
@@ -36,7 +36,7 @@ var TextBlurBlink2 = (function(){
 
     TextBlurBlink2.prototype.redraw = function(time) {
         if (this.next_time < time) {
-            // Начинаем процесс обновления text-shadow
+            // РќР°С‡РёРЅР°РµРј РїСЂРѕС†РµСЃСЃ РѕР±РЅРѕРІР»РµРЅРёСЏ text-shadow
             var body = $('body').first();
             setTimeout(function() {
                 body.css({'text-shadow': '0 0 3px #00ff00, 0 0 10px #00ff00'});

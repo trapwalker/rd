@@ -20,10 +20,10 @@ var GlitchImageEffect = (function(){
 
         this.jq_road_grid = $('.content-start-back.content-start.road-grid').first();
         this.jq_road = $('.content-start-back.content-start.road').first();
-        this.jq_skeletons = $('.car-skeleton-path'); // Массив элементов каркаса авто
+        this.jq_skeletons = $('.car-skeleton-path'); // РњР°СЃСЃРёРІ СЌР»РµРјРµРЅС‚РѕРІ РєР°СЂРєР°СЃР° Р°РІС‚Рѕ
 
 
-        // todo: решить проблему с ресайзом
+        // todo: СЂРµС€РёС‚СЊ РїСЂРѕР±Р»РµРјСѓ СЃ СЂРµСЃР°Р№Р·РѕРј
         this.canvas.width = this.ctx_w = this.image_w = image.width;
         this.canvas.height = this.ctx_h = this.image_h = image.height;
 
@@ -65,7 +65,7 @@ var GlitchImageEffect = (function(){
 
         //glitchInterval = setTimeout(glith_timeot_fire, randInt2(6000, 3000));
 
-        // включить аудио-оповещение о гличе
+        // РІРєР»СЋС‡РёС‚СЊ Р°СѓРґРёРѕ-РѕРїРѕРІРµС‰РµРЅРёРµ Рѕ РіР»РёС‡Рµ
         audioManager.play('glitch_noise', 0, null, null, true, Math.random() * 30);
     };
 
@@ -84,7 +84,7 @@ var GlitchImageEffect = (function(){
             //this.jq_skeletons.css('opacity', 0.0);
         }
 
-        // выключить аудио-оповещение о гличе
+        // РІС‹РєР»СЋС‡РёС‚СЊ Р°СѓРґРёРѕ-РѕРїРѕРІРµС‰РµРЅРёРµ Рѕ РіР»РёС‡Рµ
         audioManager.stop('glitch_noise');
     };
 
@@ -103,12 +103,12 @@ var GlitchImageEffect = (function(){
         var opacity = null;
         context.clearRect(0, 0, this.ctx_w, this.ctx_h);
 
-        // Глобальная прозрачность
+        // Р“Р»РѕР±Р°Р»СЊРЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
         if (Math.random() < 0.6) {
             opacity =  Math.random() * 0.5 + 0.3;
             context.globalAlpha = opacity;
         }
-        // Сдвиг всей машинки
+        // РЎРґРІРёРі РІСЃРµР№ РјР°С€РёРЅРєРё
         if (Math.random() < 0.4) {
             var offset_x = Math.random() * 15;
             var offset_y = Math.random() * 12;
@@ -117,14 +117,14 @@ var GlitchImageEffect = (function(){
             context.drawImage(this.image, 0, 0, this.image_w, this.image_h, 0, 0, this.image_w, this.image_h);
         }
 
-        // Глич отдельных частей машинки
+        // Р“Р»РёС‡ РѕС‚РґРµР»СЊРЅС‹С… С‡Р°СЃС‚РµР№ РјР°С€РёРЅРєРё
         for (var i = 0; i < this.randInt(2, 10); i++) {
             var rand_offset_x = Math.random() * 200 - 100;
             var rand_offset_y = Math.random() * 60 - 30;
             var y = Math.random() * this.ctx_h;
             var spliceHeight = this.randInt(40, 100);
             context.save();
-            if (y < 300 && Math.random() < 0.4) { // Значит можно делать globalCompositeOperation
+            if (y < 300 && Math.random() < 0.4) { // Р—РЅР°С‡РёС‚ РјРѕР¶РЅРѕ РґРµР»Р°С‚СЊ globalCompositeOperation
                 context.globalCompositeOperation = this.globalCompositeOperationArray[Math.floor(Math.random() * 4)];
             }
             context.drawImage(this.canvas,
@@ -141,7 +141,7 @@ var GlitchImageEffect = (function(){
                     context.putImageData(imageDataFiltered, 0, y);
                 }
                 catch (e) {
-                    console.log('Снова что-то с выбором рандомного фильтра', e);
+                    console.log('РЎРЅРѕРІР° С‡С‚Рѕ-С‚Рѕ СЃ РІС‹Р±РѕСЂРѕРј СЂР°РЅРґРѕРјРЅРѕРіРѕ С„РёР»СЊС‚СЂР°', e);
                 }
             }
 
@@ -192,7 +192,7 @@ var CanvasFilters = (function() {
     };
 
     CanvasFilters.grayscale = function (pixels) {
-        // получаем одномерный массив, описывающий все пиксели изображения
+        // РїРѕР»СѓС‡Р°РµРј РѕРґРЅРѕРјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ, РѕРїРёСЃС‹РІР°СЋС‰РёР№ РІСЃРµ РїРёРєСЃРµР»Рё РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
         var d = pixels.data;
         for (var i = 0; i < d.length; i += 4) {
             var r = d[i];

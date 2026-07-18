@@ -29,7 +29,7 @@ var CanvasManager = (function(){
         this.screen_size = this.width > 800 ? 'big' : 'small';
         if (old_size == this.screen_size) return;
 
-        // пересобрание canvas как элемента
+        // РїРµСЂРµСЃРѕР±СЂР°РЅРёРµ canvas РєР°Рє СЌР»РµРјРµРЅС‚Р°
         this.canvas.width = this.width;
         this.canvas.height = this.height;
 
@@ -45,7 +45,7 @@ var CanvasManager = (function(){
         //console.log('CanvasManager.prototype.add_vobj');
         for (var i = 0; i < this.obj_list.length; i++)
             if (this.obj_list[i].obj == obj) {
-                console.error('[visual_manager] Попытка повторного добавления визуального объекта.');
+                console.error('[visual_manager] РџРѕРїС‹С‚РєР° РїРѕРІС‚РѕСЂРЅРѕРіРѕ РґРѕР±Р°РІР»РµРЅРёСЏ РІРёР·СѓР°Р»СЊРЅРѕРіРѕ РѕР±СЉРµРєС‚Р°.');
                 return;
             }
 

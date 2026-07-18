@@ -4,8 +4,8 @@ var ECanvasLocationLaserAnimation = (function () {
         this.img = image_obj;
         this.frame_count = 20;
         this.time_of_frame = this.duration / this.frame_count;
-        this.frame_height = 746; // размер одного кадра
-        this.frame_width = 1100; // размер одного кадра
+        this.frame_height = 746; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
+        this.frame_width = 1100; // СЂР°Р·РјРµСЂ РѕРґРЅРѕРіРѕ РєР°РґСЂР°
         this.start_time = 0;
         this.offset_x = 409;
         this.offset_y = 52;
@@ -15,7 +15,7 @@ var ECanvasLocationLaserAnimation = (function () {
     }
 
     ECanvasLocationLaserAnimation.prototype._get_frame_num = function (time) {
-        var time_off = time - this.start_time; // время, прошедшее сначала анимации
+        var time_off = time - this.start_time; // РІСЂРµРјСЏ, РїСЂРѕС€РµРґС€РµРµ СЃРЅР°С‡Р°Р»Р° Р°РЅРёРјР°С†РёРё
         time_off = time_off < 0 ? 0 : time_off;
         if (time_off > this.duration) {
             this.start_time = time;
@@ -26,7 +26,7 @@ var ECanvasLocationLaserAnimation = (function () {
         if (frame > this.frame_count - 1) return this.frame_count - 1;
         return frame % this.frame_count;
 
-        // Это для движения 12345432123... 
+        // Р­С‚Рѕ РґР»СЏ РґРІРёР¶РµРЅРёСЏ 12345432123... 
         //var all_frame_number = Math.floor(time_off / this.time_of_frame);
         //var fc2 = this.frame_count * 2 - 2;
         //var frame = all_frame_number % fc2;

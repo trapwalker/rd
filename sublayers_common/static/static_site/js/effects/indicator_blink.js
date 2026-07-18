@@ -1,5 +1,5 @@
-var constIndicatorBlinkDelay = 400;         // время смены яркости индикатора
-var constIndicatorBlinkMainOpacity = 0.6;   // базовое значение прозрачности индикатора
+var constIndicatorBlinkDelay = 400;         // РІСЂРµРјСЏ СЃРјРµРЅС‹ СЏСЂРєРѕСЃС‚Рё РёРЅРґРёРєР°С‚РѕСЂР°
+var constIndicatorBlinkMainOpacity = 0.6;   // Р±Р°Р·РѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё РёРЅРґРёРєР°С‚РѕСЂР°
 
 
 var IndicatorBlink = (function(){

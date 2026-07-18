@@ -87,7 +87,7 @@
 
 .window-news-content .window-qg-content-header {
     width: calc(100% - 4px);
-    text-overflow: ellipsis; /* Многоточие */
+    text-overflow: ellipsis; /* РњРЅРѕРіРѕС‚РѕС‡РёРµ */
     overflow: hidden;
     white-space: nowrap;
     padding: 0 4px;

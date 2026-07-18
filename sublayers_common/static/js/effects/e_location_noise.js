@@ -19,7 +19,7 @@ var ECanvasLocationNoise = (function () {
     }
 
     ECanvasLocationNoise.prototype._generate_img = function() {
-        // В случае если изменилось разрешение экрана, надо перегенерировать картинку шума
+        // Р’ СЃР»СѓС‡Р°Рµ РµСЃР»Рё РёР·РјРµРЅРёР»РѕСЃСЊ СЂР°Р·СЂРµС€РµРЅРёРµ СЌРєСЂР°РЅР°, РЅР°РґРѕ РїРµСЂРµРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РєР°СЂС‚РёРЅРєСѓ С€СѓРјР°
         var width = Math.round(locationManager.location_canvas_effect_manager.width * 1.2);
         var height = Math.round(locationManager.location_canvas_effect_manager.height * 1.2);
         if ((this.img_size.x != width) || (this.img_size.y != height)) {
@@ -29,7 +29,7 @@ var ECanvasLocationNoise = (function () {
             this.img_size.x = width;
             this.img_size.y = height;
 
-            // Генерируем новый шум
+            // Р“РµРЅРµСЂРёСЂСѓРµРј РЅРѕРІС‹Р№ С€СѓРј
             var temp_canvas = this.temp_canvas;
             temp_canvas.width = this.img_size.x;
             temp_canvas.height = this.img_size.y;

@@ -1,5 +1,5 @@
 /*
-* LocationCanvasManager - объект, занимающийся отрисовкой на канвас города
+* LocationCanvasManager - РѕР±СЉРµРєС‚, Р·Р°РЅРёРјР°СЋС‰РёР№СЃСЏ РѕС‚СЂРёСЃРѕРІРєРѕР№ РЅР° РєР°РЅРІР°СЃ РіРѕСЂРѕРґР°
 * */
 
 var LocationCanvasManager = (function(_super){

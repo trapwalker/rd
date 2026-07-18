@@ -35,7 +35,7 @@
         '/static/img/chat/tab_close_btn_over.png' + random_str(),
         '/static/img/chat/tab_close_btn_pressed.png' + random_str(),
 
-        // Окна Старта/Смерти быстрой игры
+        // РћРєРЅР° РЎС‚Р°СЂС‚Р°/РЎРјРµСЂС‚Рё Р±С‹СЃС‚СЂРѕР№ РёРіСЂС‹
         //'/static/img/modal_window_image/btn1_active.png' + random_str(),
         //'/static/img/modal_window_image/btn1_hover.png' + random_str(),
         //'/static/img/modal_window_image/btn1_press.png' + random_str(),
@@ -55,7 +55,7 @@
         //'/static/img/modal_window_image/btn2_start_hover.png' + random_str(),
         //'/static/img/modal_window_image/btn2_start_press.png' + random_str(),
 
-        // Круиз контрол
+        // РљСЂСѓРёР· РєРѕРЅС‚СЂРѕР»
         '/static/img/cruise/limit_arrow.png' + random_str(),
 
         '/static/img/fire_control/aim_glass.png' + random_str(),
@@ -140,15 +140,15 @@
         '/static/img/noise/2n2_white.png' + random_str(),
         '/static/img/noise/2n3_white.png' + random_str(),
         '/static/img/noise/2n4_white.png' + random_str()
-        // todo: не забыть пройтись по папке /static/content/locations/institutions
+        // todo: РЅРµ Р·Р°Р±С‹С‚СЊ РїСЂРѕР№С‚РёСЃСЊ РїРѕ РїР°РїРєРµ /static/content/locations/institutions
     ];
 
 
-    // Предзагрузка для разных разрешений:
+    // РџСЂРµРґР·Р°РіСЂСѓР·РєР° РґР»СЏ СЂР°Р·РЅС‹С… СЂР°Р·СЂРµС€РµРЅРёР№:
     if ($(window).width() < 1550 || $(window).height() > 880)
-    // загрузка маленького разрешения
+    // Р·Р°РіСЂСѓР·РєР° РјР°Р»РµРЅСЊРєРѕРіРѕ СЂР°Р·СЂРµС€РµРЅРёСЏ
         ll = ll.concat([
-            // Круиз контрол
+            // РљСЂСѓРёР· РєРѕРЅС‚СЂРѕР»
             '/static/img/cruise/cruise_768/cruise_glass.png' + random_str(),
             '/static/img/cruise/cruise_768/cruise_port.png' + random_str(),
             '/static/img/cruise/cruise_768/dgigits_back_glow.png' + random_str(),
@@ -174,14 +174,14 @@
             '/static/img/cruise/cruise_768/stop_btn_over.png' + random_str(),
             '/static/img/cruise/cruise_768/stop_btn_pressed.png' + random_str(),
 
-            // Зум слайдер
+            // Р—СѓРј СЃР»Р°Р№РґРµСЂ
             '/static/img/control_zoom/zoom_768/zoom_port.png' + random_str(),
             '/static/img/control_zoom/zoom_768/zoom_glass.png' + random_str(),
             '/static/img/control_zoom/zoom_768/zoom_mark.png' + random_str(),
             '/static/img/control_zoom/zoom_768/hide_gadgets.png' + random_str(),
             '/static/img/control_zoom/zoom_768/unhide_gadgets.png' + random_str(),
 
-            // Свернуть/Развернуть виджеты
+            // РЎРІРµСЂРЅСѓС‚СЊ/Р Р°Р·РІРµСЂРЅСѓС‚СЊ РІРёРґР¶РµС‚С‹
 
             '/static/img/misc_button/768/down_hide_normal.png' + random_str(),
             '/static/img/misc_button/768/down_hide_hover.png' + random_str(),
@@ -191,9 +191,9 @@
             '/static/img/misc_button/768/up_hide_active.png' + random_str(),
         ]);
     else
-    // Загрузка нормального разрешения
+    // Р—Р°РіСЂСѓР·РєР° РЅРѕСЂРјР°Р»СЊРЅРѕРіРѕ СЂР°Р·СЂРµС€РµРЅРёСЏ
         ll = ll.concat([
-            // Круиз контрол
+            // РљСЂСѓРёР· РєРѕРЅС‚СЂРѕР»
             '/static/img/cruise/cruise_glass.png' + random_str(),
             '/static/img/cruise/cruise_port.png' + random_str(),
             '/static/img/cruise/dgigits_back_glow.png' + random_str(),
@@ -219,14 +219,14 @@
             '/static/img/cruise/stop_btn_over.png' + random_str(),
             '/static/img/cruise/stop_btn_pressed.png' + random_str(),
 
-            // Зум слайдер
+            // Р—СѓРј СЃР»Р°Р№РґРµСЂ
             '/static/img/control_zoom/zoom_port.png' + random_str(),
             '/static/img/control_zoom/zoom_glass.png' + random_str(),
             '/static/img/control_zoom/zoom_mark.png' + random_str(),
             '/static/img/control_zoom/hide_gadgets.png' + random_str(),
             '/static/img/control_zoom/unhide_gadgets.png' + random_str(),
 
-            // Свернуть/Развернуть виджеты
+            // РЎРІРµСЂРЅСѓС‚СЊ/Р Р°Р·РІРµСЂРЅСѓС‚СЊ РІРёРґР¶РµС‚С‹
             '/static/img/misc_button/down_hide_normal.png' + random_str(),
             '/static/img/misc_button/down_hide_hover.png' + random_str(),
             '/static/img/misc_button/down_hide_active.png' + random_str(),

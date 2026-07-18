@@ -34,14 +34,14 @@ var GeoLocationManager = (function(_super){
         else
             $('.v-indicator').text('-');
 
-        // todo: стереть это потом!
+        // todo: СЃС‚РµСЂРµС‚СЊ СЌС‚Рѕ РїРѕС‚РѕРј!
         if (user && user.userCar && this.kalman_set) {
             var last_kalman_pos = this.kalman_filter.get_lat_lng();
             this.kalman_filter.process(position.coords.latitude, position.coords.longitude, position.coords.accuracy, position.timestamp);
             var current_kalman_pos = this.kalman_filter.get_lat_lng();
             pos = mapManager.project(current_kalman_pos, 18);
             console.log('Kalman:' + pos);
-            // Определение направления, если это возможно
+            // РћРїСЂРµРґРµР»РµРЅРёРµ РЅР°РїСЂР°РІР»РµРЅРёСЏ, РµСЃР»Рё СЌС‚Рѕ РІРѕР·РјРѕР¶РЅРѕ
             var direction = null;
             if (last_kalman_pos) {
                 var last_pos = mapManager.project(last_kalman_pos, 18);

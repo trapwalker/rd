@@ -16,7 +16,7 @@ function CanvasTestStart() {
 var color = ["rgba(255, 0, 0, 0.8)", "rgba(255, 0, 0, 0.6)", "rgba(255, 0, 0, 0.4)", "rgba(255, 0, 0, 0.2)", "rgba(255, 0, 0, 0)"];
 
 
-    // шум
+    // С€СѓРј
     //var index = Math.round(Math.random() * 3);
     //pat = b_context.createPattern(img[index], "repeat");
     //b_context.fillStyle = pat;
@@ -53,7 +53,7 @@ var color = ["rgba(255, 0, 0, 0.8)", "rgba(255, 0, 0, 0.6)", "rgba(255, 0, 0, 0.
     //pat = b_context.createPattern(img[index], "repeat");
     //b_context.fillStyle = pat;
 
-    //// линии
+    //// Р»РёРЅРёРё
     //b_context.strokeStyle = "rgba(0, 0, 0, 0.8)";
     //b_context.lineWidth = 2;
     //b_context.beginPath();

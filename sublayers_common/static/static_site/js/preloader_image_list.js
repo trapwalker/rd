@@ -1,4 +1,4 @@
-/*Функция для предзагрузки */
+/*Р¤СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРµРґР·Р°РіСЂСѓР·РєРё */
 
 function init_preload_images() {
     var locale = 'en';
@@ -140,7 +140,7 @@ function init_preload_images() {
         preloaderImage.add('/static/static_site/img/1366_june/768_volume_indicator_mark.png');
     }
 
-    // Наполнение сайта (внутри микроволновки)
+    // РќР°РїРѕР»РЅРµРЅРёРµ СЃР°Р№С‚Р° (РІРЅСѓС‚СЂРё РјРёРєСЂРѕРІРѕР»РЅРѕРІРєРё)
     preloaderImage.add('/static/static_site/img/temp_insurance_' + locale + '.png');
     preloaderImage.add('/static/content/avatars/dog_def.png');
     preloaderImage.add('/static/static_site/img/chip_buttons/' + locale + '/school.png');
@@ -159,12 +159,12 @@ function init_preload_images() {
 
 
 function after_preload_load_images() {
-    // Показ основного окна и смена цвета боди
+    // РџРѕРєР°Р· РѕСЃРЅРѕРІРЅРѕРіРѕ РѕРєРЅР° Рё СЃРјРµРЅР° С†РІРµС‚Р° Р±РѕРґРё
     $('body').addClass('visible-site');
     $('#siteBlock').css('display', 'block');
     $('#preloaderBlock').css('display', 'none');
 
-    // Работа с светящимся беком
+    // Р Р°Р±РѕС‚Р° СЃ СЃРІРµС‚СЏС‰РёРјСЃСЏ Р±РµРєРѕРј
     function loaded_back_image(img) {
         var jq_back =  $('.site-main-back').first();
         var jq_back_path = $('<div class="site-main-back-part" style="opacity: 0;"></div>');

@@ -43,7 +43,7 @@
 .window-pi-user-info-table {
     position: relative;
     width: 100%;
-    height: 151px;  /* Так как есть паддинг сверху, а нужно вместить аватарку */
+    height: 151px;  /* РўР°Рє РєР°Рє РµСЃС‚СЊ РїР°РґРґРёРЅРі СЃРІРµСЂС…Сѓ, Р° РЅСѓР¶РЅРѕ РІРјРµСЃС‚РёС‚СЊ Р°РІР°С‚Р°СЂРєСѓ */
     padding: 5px 5px 0 10px;
     box-sizing: border-box;
 }
@@ -121,7 +121,7 @@
     }
 
     .window-pi-user-info-table .person-info-chat-person-up-left {
-        margin-top: 3px;  /*Ну никак иначе не получалось! */
+        margin-top: 3px;  /*РќСѓ РЅРёРєР°Рє РёРЅР°С‡Рµ РЅРµ РїРѕР»СѓС‡Р°Р»РѕСЃСЊ! */
     }
 
     .window-pi-user-info-table .person-info-chat-person-up-right {

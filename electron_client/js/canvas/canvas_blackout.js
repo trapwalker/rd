@@ -1,4 +1,4 @@
-var constDisplayBlackOutTimer = 150;    // частота смены опасити
+var constDisplayBlackOutTimer = 150;    // С‡Р°СЃС‚РѕС‚Р° СЃРјРµРЅС‹ РѕРїР°СЃРёС‚Рё
 
 var CanvasBlackOut = (function(){
     function CanvasBlackOut() {

@@ -1,6 +1,6 @@
-var constDisplayRipplingSpeed = 0.01;     // смещение линий на каждый тик
-var constDisplayRipplingWidth = 600;      // ширина линии
-var constDisplayRipplingOpacity = 0.02;   // минимальная прозрачность мерцания
+var constDisplayRipplingSpeed = 0.01;     // СЃРјРµС‰РµРЅРёРµ Р»РёРЅРёР№ РЅР° РєР°Р¶РґС‹Р№ С‚РёРє
+var constDisplayRipplingWidth = 600;      // С€РёСЂРёРЅР° Р»РёРЅРёРё
+var constDisplayRipplingOpacity = 0.02;   // РјРёРЅРёРјР°Р»СЊРЅР°СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РјРµСЂС†Р°РЅРёСЏ
 
 var CanvasDisplayRippling = (function(){
     function CanvasDisplayRippling() {
