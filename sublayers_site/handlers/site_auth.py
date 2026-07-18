@@ -9,7 +9,6 @@ from sublayers_server.model.registry_me.classes.agents import Agent
 from sublayers_common.creater_agent import create_agent
 from sublayers_common import mailing
 
-import tornado.gen
 from tornado.web import RequestHandler, HTTPError
 from tornado.auth import GoogleOAuth2Mixin, OAuth2Mixin, TwitterMixin, FacebookGraphMixin, AuthError, OpenIdMixin
 from tornado.httputil import url_concat
@@ -403,8 +402,7 @@ class SetForumUserAuth(StandardLoginHandler):
 
 
 class SteamLoginHandler(RequestHandler):
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         ticket = self.get_argument('ticket', False)
         if ticket and self.settings.get("steam_auth", None):
             http_client = AsyncHTTPClient()
@@ -414,7 +412,7 @@ class SteamLoginHandler(RequestHandler):
                 "appid": self.settings["steam_auth"]["appid"],
             }
             try:
-                response = yield http_client.fetch(url_concat("https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/", params),
+                response = await http_client.fetch(url_concat("https://api.steampowered.com/ISteamUserAuth/AuthenticateUserTicket/v1/", params),
                                              method="GET")
                 response = json.loads(response.body)
                 response = response and response.get("response", None)
@@ -462,8 +460,7 @@ class SteamLoginHandler(RequestHandler):
 class SteamOpenIDHandler(RequestHandler, OpenIdMixin):
     _OPENID_ENDPOINT = "https://steamcommunity.com/openid/login"
 
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         req = self.request
         electron = self.get_argument("mode", "") == "electron"
         redirect_uri = '{p}://{h}/{path}{mode}'.format(
@@ -477,7 +474,7 @@ class SteamOpenIDHandler(RequestHandler, OpenIdMixin):
             return
 
         if self.get_argument("openid.mode", None):
-            user = yield self.get_authenticated_user()
+            user = await self.get_authenticated_user()
             cookie = self._on_get_user_info(user['claimed_id'].split('/')[-1])
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
@@ -486,7 +483,7 @@ class SteamOpenIDHandler(RequestHandler, OpenIdMixin):
                 self.send_error(404, reason="User authorisation failed")
             return
         else:
-            yield self.authenticate_redirect(callback_uri=redirect_uri)
+            self.authenticate_redirect(callback_uri=redirect_uri)
 
     def _on_get_user_info(self, user):
         steam_id = user
@@ -505,8 +502,7 @@ class SteamOpenIDHandler(RequestHandler, OpenIdMixin):
 
 
 class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         code = self.get_argument('code', False)
         req = self.request
         electron = self.get_argument("mode", "") == "electron"
@@ -522,10 +518,10 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             return
 
         if code:
-            access = yield self.get_authenticated_user(
+            access = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 code=code)
-            user = yield self.oauth2_request(
+            user = await self.oauth2_request(
                 "https://www.googleapis.com/oauth2/v1/userinfo",
                 access_token=access["access_token"])
 
@@ -539,7 +535,7 @@ class GoogleLoginHandler(RequestHandler, GoogleOAuth2Mixin):
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
-            yield self.authorize_redirect(
+            self.authorize_redirect(
                 redirect_uri=redirect_uri,
                 client_id=self.settings['google_oauth']['key'],
                 scope=['profile'],
@@ -569,8 +565,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
     _OAUTH_ACCESS_TOKEN_URL = "https://oauth.vk.com/access_token"
     _OAUTH_SETTINGS_KEY = "vk_oauth"
 
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         code = self.get_argument('code', False)
         req = self.request
         electron = self.get_argument("mode", "") == "electron"
@@ -617,7 +612,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
-            yield self.authorize_redirect(
+            self.authorize_redirect(
                 redirect_uri=redirect_uri,
                 client_id=self.settings[self._OAUTH_SETTINGS_KEY]['key'],
                 scope=[],
@@ -645,8 +640,7 @@ class VKLoginHandler(RequestHandler, OAuth2Mixin):
 
 
 class TwitterLoginHandler(RequestHandler, TwitterMixin):
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         req = self.request
         electron = self.get_argument("mode", "") == "electron"
         redirect_uri = '{p}://{h}/{path}{mode}'.format(
@@ -661,7 +655,7 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
             return
 
         if self.get_argument("oauth_token", None):
-            user = yield self.get_authenticated_user()
+            user = await self.get_authenticated_user()
             cookie = self._on_get_user_info(user)
             if cookie is not None:
                 self.set_secure_cookie("user", cookie)
@@ -672,7 +666,10 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
-            yield self.authorize_redirect(callback_uri=redirect_uri)
+            # Unlike the OAuth2 mixins above, TwitterMixin's authorize_redirect
+            # (OAuth1) is a genuine coroutine - it makes an outbound HTTP call
+            # to fetch a request token before redirecting - so it must be awaited.
+            await self.authorize_redirect(callback_uri=redirect_uri)
 
     def _on_get_user_info(self, user):
         if user:
@@ -693,8 +690,7 @@ class TwitterLoginHandler(RequestHandler, TwitterMixin):
 
 
 class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         if not self.settings.get('facebook_api_key', None) or not self.settings.get('facebook_secret', None):
             self.send_error(status_code=501)
             return
@@ -709,7 +705,7 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
 
         code = self.get_argument("code", False)
         if code:
-            user = yield self.get_authenticated_user(
+            user = await self.get_authenticated_user(
                 redirect_uri=redirect_uri,
                 client_id=self.settings["facebook_api_key"],
                 client_secret=self.settings["facebook_secret"],
@@ -724,7 +720,7 @@ class FacebookLoginHandler(RequestHandler, FacebookGraphMixin):
             else:
                 self.redirect("/login?msg=Ошибка%20авторизации")
         else:
-            yield self.authorize_redirect(
+            self.authorize_redirect(
                 redirect_uri=redirect_uri,
                 client_id=self.settings["facebook_api_key"],
                 extra_params={"scope": "public_profile"})
