@@ -54,7 +54,6 @@ from sublayers_server.handlers.teaching import MapTeachingHandler, ConsoleAnswer
 
 from sublayers_server.handlers.site.site_auth import (
     SiteLoginHandler, LogoutHandler, StandardLoginHandler,
-    # GoogleLoginHandler, OKLoginHandler, VKLoginHandler,
 )
 from sublayers_server.handlers.context_panel import ContextPanelListHandler
 
@@ -123,9 +122,6 @@ class Application(BaseApplication):
             (r"/login", SiteLoginHandler),
             (r"/logout", LogoutHandler),
             (r"/login/standard", StandardLoginHandler),
-            # (r"/login/google", GoogleLoginHandler),  # todo: social auth
-            # (r"/login/ok", OKLoginHandler),
-            # (r"/login/vk", VKLoginHandler),
 
             (r"/stat", ServerStatisticsHandler),
             (r"/site_stat", ServerStatForSite),
