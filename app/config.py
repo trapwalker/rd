@@ -102,7 +102,6 @@ class Settings(BaseSettings):
     # File paths
     static_path: str = "sublayers_common/static"
     world_path: str = "sublayers_world"
-    template_path: str = "sublayers_server/templates"
 
     # Game server
     service_name: str = "sl"
