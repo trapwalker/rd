@@ -1049,14 +1049,14 @@ class QuickUser(User):
 
     def _add_quick_game_record(self, points, time):
         # pymongo add to quick_game_records
-        self.record_id = self.server.app.db.quick_game_records.insert(
+        self.record_id = self.server.app.db.quick_game_records.insert_one(
             {
                 'name': self.print_login(),
                 'user_uid': self.user.id,
                 'points': points,
                 'time': self.server.get_time()
             }
-        )
+        ).inserted_id
 
     def on_connect(self, **kw):
         super(QuickUser, self).on_connect(**kw)
