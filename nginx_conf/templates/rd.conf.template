@@ -55,7 +55,7 @@ server {
 
     # Site server: landing page + auth
     location = / {
-        proxy_pass $site_upstream/;
+        proxy_pass $site_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -75,7 +75,14 @@ server {
     }
 
     location /site_api/ {
-        proxy_pass $site_upstream/site_api/;
+        # No URI part after the variable: with a variable in proxy_pass,
+        # nginx can't do its usual "replace the matched location prefix"
+        # rewrite, so a literal suffix here (e.g. "$site_upstream/site_api/")
+        # gets appended in front of the *unmodified* original request URI
+        # instead of replacing it - upstream saw /site_api/site_api/locale
+        # and 404d. site-server's own routes already include the /site_api/
+        # prefix, so passing the original URI through unchanged is correct.
+        proxy_pass $site_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -84,9 +91,14 @@ server {
         proxy_read_timeout 180;
     }
 
-    # Quick engine: tutorial / fast-respawn mode
+    # Quick engine: tutorial / fast-respawn mode. quick-engine's own routes
+    # (/play, /ws, /api/...) have no /quick/ prefix, so it must be stripped.
+    # A variable proxy_pass can't do that via the usual "replace matched
+    # prefix" trick (see /site_api/ above), so rewrite the URI explicitly
+    # before handing it to proxy_pass.
     location = /quick/ws {
-        proxy_pass $quick_upstream/ws;
+        rewrite ^/quick/ws$ /ws break;
+        proxy_pass $quick_upstream;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -96,7 +108,8 @@ server {
     }
 
     location /quick/ {
-        proxy_pass $quick_upstream/;
+        rewrite ^/quick/(.*)$ /$1 break;
+        proxy_pass $quick_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
