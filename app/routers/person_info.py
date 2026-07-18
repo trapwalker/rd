@@ -76,6 +76,7 @@ async def person_info_handler(
     template_name = "person/person_info_chat.html" if mode == "city" else "person/person_window.html"
 
     return templates.TemplateResponse(
+        request,
         template_name,
         {
             "request": request,
@@ -128,6 +129,7 @@ async def person_info_corpse_handler(
 
     # Mock data for now
     return templates.TemplateResponse(
+        request,
         "person/person_window.html",
         {
             "request": request,
@@ -175,6 +177,7 @@ async def main_car_info_handler(
     )
 
     return templates.TemplateResponse(
+        request,
         "car/main_car_info.html",
         {
             "request": request,

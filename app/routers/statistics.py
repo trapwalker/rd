@@ -68,6 +68,7 @@ async def server_statistics_handler(
     logger.info("Server statistics accessed from localhost")
 
     return templates.TemplateResponse(
+        request,
         "statistics/module_entry_server_stats.html",
         {
             "request": request,
@@ -187,6 +188,7 @@ async def server_stat_messages_handler(
     logger.info("Message statistics accessed from localhost")
 
     return templates.TemplateResponse(
+        request,
         "statistics/messages_stats.html",
         {
             "request": request,
@@ -225,6 +227,7 @@ async def server_stat_events_handler(
     logger.info("Event statistics accessed from localhost")
 
     return templates.TemplateResponse(
+        request,
         "statistics/events_stats.html",
         {
             "request": request,
@@ -264,6 +267,7 @@ async def server_stat_quests_handler(
     logger.info("Quest statistics accessed from localhost")
 
     return templates.TemplateResponse(
+        request,
         "statistics/quests_stats.html",
         {
             "request": request,
@@ -302,6 +306,7 @@ async def server_stat_handlers_handler(
     logger.info("Handler statistics accessed from localhost")
 
     return templates.TemplateResponse(
+        request,
         "statistics/handlers_stats.html",
         {
             "request": request,
@@ -381,6 +386,7 @@ async def server_stat_graphics_handler(
     logger.info(f"Graphics statistics accessed for date range {start_date} to {end_date}")
 
     return templates.TemplateResponse(
+        request,
         "statistics/graphics_stats.html",
         {
             "request": request,
@@ -461,6 +467,7 @@ async def server_stat_event_graphics_handler(
     logger.info(f"Event graphics statistics accessed for date range {start_date} to {end_date}")
 
     return templates.TemplateResponse(
+        request,
         "statistics/event_graphics_stats.html",
         {
             "request": request,

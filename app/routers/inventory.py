@@ -55,6 +55,7 @@ async def main_inventory_handler(
     logger.info(f"User {current_user.username} opening inventory")
 
     return templates.TemplateResponse(
+        request,
         "inventory/main.html",
         {
             "request": request,
@@ -96,6 +97,7 @@ async def container_inventory_handler(
     logger.info(f"User {current_user.username} opening container {container_id}")
 
     return templates.TemplateResponse(
+        request,
         "inventory/container.html",
         {
             "request": request,
@@ -145,6 +147,7 @@ async def barter_inventory_handler(
     logger.info(f"User {current_user.username} opening barter {barter_id}")
 
     return templates.TemplateResponse(
+        request,
         "inventory/barter.html",
         {
             "request": request,

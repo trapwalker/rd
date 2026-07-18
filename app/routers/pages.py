@@ -86,6 +86,7 @@ async def play_handler(
     # Check server status
     if server_state.is_closed_for_agents:
         return templates.TemplateResponse(
+            request,
             "banned.html",
             {
                 "request": request,
@@ -98,6 +99,7 @@ async def play_handler(
     # Check if user is banned
     if user.is_banned:
         return templates.TemplateResponse(
+            request,
             "banned.html",
             {
                 "request": request,
@@ -155,6 +157,7 @@ async def play_handler(
 
     # Default: render play page
     return templates.TemplateResponse(
+        request,
         "play.html",
         {
             "request": request,
@@ -197,6 +200,7 @@ async def _handle_basic_mode(
             coord = user.start_position or {"x": 0.0, "y": 0.0}
 
             return templates.TemplateResponse(
+                request,
                 "play.html",
                 {
                     "request": request,
@@ -260,6 +264,7 @@ async def _handle_quick_mode(
     await user.save()
 
     return templates.TemplateResponse(
+        request,
         "play.html",
         {
             "request": request,
@@ -300,6 +305,7 @@ async def mobile_play_handler(
     # TODO: Implement quick registration for mobile
 
     return templates.TemplateResponse(
+        request,
         "mobile/play.html",
         {
             "request": request,

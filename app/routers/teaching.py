@@ -82,6 +82,7 @@ async def map_teaching_handler(
 
     try:
         return templates.TemplateResponse(
+            request,
             template_path,
             {
                 "request": request,
@@ -92,6 +93,7 @@ async def map_teaching_handler(
     except Exception:
         # Fallback to generic tutorial template
         return templates.TemplateResponse(
+            request,
             "teaching/generic.html",
             {
                 "request": request,

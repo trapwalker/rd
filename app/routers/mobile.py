@@ -48,6 +48,7 @@ async def mobile_header_handler(
     logger.info("Mobile header requested")
 
     return templates.TemplateResponse(
+        request,
         "mobile/header.html",
         {
             "request": request,
@@ -84,6 +85,7 @@ async def mobile_content_handler(
     logger.info("Mobile content requested")
 
     return templates.TemplateResponse(
+        request,
         "mobile/content.html",
         {
             "request": request,

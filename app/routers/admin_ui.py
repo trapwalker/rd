@@ -93,6 +93,7 @@ async def adm_main_handler(
     logger.info(f"Admin dashboard accessed by {current_user.username}")
 
     return templates.TemplateResponse(
+        request,
         "adm/main.html",
         {
             "request": request,
@@ -209,6 +210,7 @@ async def adm_find_users_handler(
     )
 
     return templates.TemplateResponse(
+        request,
         "adm/find.html",
         {
             "request": request,
@@ -255,6 +257,7 @@ async def adm_user_info_handler(
     logger.info(f"Admin {current_user.username} viewing user {username}")
 
     return templates.TemplateResponse(
+        request,
         "adm/user.html",
         {
             "request": request,
@@ -457,6 +460,7 @@ async def adm_agent_info_handler(
     logger.info(f"Admin {current_user.username} viewing agent for {username}")
 
     return templates.TemplateResponse(
+        request,
         "adm/agent.html",
         {
             "request": request,
@@ -582,6 +586,7 @@ async def adm_agent_quests_handler(
         raise HTTPException(status_code=404, detail=f"User {username} not found")
 
     return templates.TemplateResponse(
+        request,
         "adm/quests.html",
         {"request": request, "user": user, "current_user": current_user}
     )
@@ -605,6 +610,7 @@ async def adm_agent_quests_inventory_handler(
         raise HTTPException(status_code=404, detail=f"User {username} not found")
 
     return templates.TemplateResponse(
+        request,
         "adm/quests_inventory.html",
         {"request": request, "user": user, "current_user": current_user}
     )
@@ -628,6 +634,7 @@ async def adm_agent_npc_relations_handler(
         raise HTTPException(status_code=404, detail=f"User {username} not found")
 
     return templates.TemplateResponse(
+        request,
         "adm/npc_relations.html",
         {"request": request, "user": user, "current_user": current_user}
     )
@@ -669,6 +676,7 @@ async def adm_user_history_handler(
     adm_logs = []
 
     return templates.TemplateResponse(
+        request,
         "adm/gamelogs.html",
         {
             "request": request,

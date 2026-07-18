@@ -50,6 +50,7 @@ async def menu_character(
         logger.info(f"User {user.username} opening character menu")
 
     return templates.TemplateResponse(
+        request,
         "menu/character.html",
         {
             "request": request,
@@ -84,6 +85,7 @@ async def menu_journal(
         template_name = "menu/quick_mode_plug.html"
 
     return templates.TemplateResponse(
+        request,
         template_name,
         {
             "request": request,
@@ -113,6 +115,7 @@ async def menu_settings(
         )
 
     return templates.TemplateResponse(
+        request,
         "menu/settings.html",
         {
             "request": request,
@@ -141,6 +144,7 @@ async def menu_radio(
         )
 
     return templates.TemplateResponse(
+        request,
         "menu/radio.html",
         {
             "request": request,
@@ -174,6 +178,7 @@ async def menu_party(
         template_name = "menu/quick_mode_plug.html"
 
     return templates.TemplateResponse(
+        request,
         template_name,
         {
             "request": request,
@@ -203,6 +208,7 @@ async def menu_car(
         )
 
     return templates.TemplateResponse(
+        request,
         "menu/car.html",
         {
             "request": request,
@@ -237,6 +243,7 @@ async def menu_nucoil(
     #         raise HTTPException(status_code=404, detail="Car required")
 
     return templates.TemplateResponse(
+        request,
         "menu/nucoil.html",
         {
             "request": request,
@@ -265,6 +272,7 @@ async def context_panel_list(
         )
 
     return templates.TemplateResponse(
+        request,
         "context_panel.html",
         {
             "request": request,
