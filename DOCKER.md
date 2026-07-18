@@ -490,16 +490,31 @@ docker-compose run --user root app bash
 
 ### Out of Disk Space
 
+BuildKit's build cache is almost always the biggest consumer during active
+development - every `docker compose up -d --build` after a code change adds
+new cache layers, and nothing prunes it automatically. On a dev machine
+doing frequent rebuilds this can reach tens of GB within a single day and
+fill the disk (Docker Desktop on macOS backs this with a growing virtual
+disk image that doesn't shrink back on its own even after pruning inside
+it - `docker desktop restart` can help if the daemon itself starts refusing
+writes with I/O errors, which is a sign the underlying disk really is full).
+
 ```bash
-# Clean unused images
-docker image prune -a
+# Build cache first - safe, doesn't touch running containers, images, or
+# volumes, and is usually where most of the space actually is:
+docker builder prune -f          # cache not used by anything currently building
+docker builder prune -a -f       # all build cache, more aggressive
 
-# Clean unused volumes
-docker volume prune
-
-# Clean everything
-docker system prune -a --volumes
+# Then dangling (untagged, orphaned) images - also safe:
+docker image prune -f
 ```
+
+**Careful on a shared host** (this machine likely runs other projects'
+containers too): `docker volume prune` and `docker system prune -a
+--volumes` delete *any* volume not attached to a currently-running
+container, including other projects' databases that just happen to be
+stopped right now, not just RoadDogs'. Don't run those without checking
+`docker volume ls` / `docker ps -a` first to see what else is on the box.
 
 ## CI/CD Integration
 
@@ -570,6 +585,11 @@ DOCKER_BUILDKIT=1 docker build -t roaddogs .
 
 # Multi-stage builds already configured in Dockerfile
 ```
+
+Don't prune the build cache after every build to "keep things clean" - that
+defeats the point of caching and makes every subsequent build slow again.
+It's normal for it to grow during a work session; prune it periodically
+instead (see "Out of Disk Space" above), not as part of the build itself.
 
 ### Resource Allocation
 
