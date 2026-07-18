@@ -125,7 +125,13 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def on_pong(self, data):
         t = self.application.srv.get_time()
-        d = json.loads(data)
-        if d['number'] == self.ping_number - 1:
-            self._current_ping = round((t - d['time']) * 1000, 0)
-            assert self._current_ping >= 0, 'current_time={}  ping_time={} ping={} number={}'.format(t, d['time'], self._current_ping, d['number'])
+        try:
+            d = json.loads(data)
+            ping_time = d['time']
+            ping_number = d['number']
+        except (ValueError, TypeError, KeyError) as e:
+            log.warning('Malformed pong payload from agent %s: %r (%s)', self.agent, data, e)
+            return
+
+        if ping_number == self.ping_number - 1:
+            self._current_ping = max(round((t - ping_time) * 1000, 0), 0)
