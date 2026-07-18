@@ -15,6 +15,12 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        # .env is shared with docker-compose (GAME_ENGINE_HOST, SITE_PORT,
+        # NGINX_HTTP_PORT, ...) for the legacy Tornado stack's own variable
+        # substitution - those aren't Settings fields, so pydantic-settings'
+        # default "forbid" would reject the whole file over vars this model
+        # was never meant to read.
+        extra="ignore",
     )
 
     # Application

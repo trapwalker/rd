@@ -1,6 +1,7 @@
 """Pytest configuration and fixtures for testing."""
 
 import asyncio
+import os
 from collections.abc import AsyncGenerator, Generator
 from typing import Any
 
@@ -20,8 +21,15 @@ from app.models.user import User
 def test_settings():
     """Override settings for testing."""
     settings = get_settings()
-    # Use test database
-    settings.mongodb_url = "mongodb://localhost:27017/rd_test"
+    # Use test database. Matches docker-compose.yml's mongodb service, which
+    # requires auth - a bare "mongodb://localhost:27017/rd_test" 404s every
+    # test with "OperationFailure: requires authentication" against that
+    # container. Point MONGODB_URL elsewhere if you run a separate, unauthed
+    # test-only mongod instead.
+    settings.mongodb_url = os.environ.get(
+        "TEST_MONGODB_URL",
+        "mongodb://admin:admin_password@localhost:27017/rd_test?authSource=admin",
+    )
     settings.secret_key = "test-secret-key-do-not-use-in-production"
     settings.environment = "test"
     return settings

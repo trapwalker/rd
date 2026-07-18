@@ -20,7 +20,15 @@ import pytest
 REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../..'))
 ENGINE_DIR = os.path.join(REPO_ROOT, 'sublayers_server')
 SITE_DIR = os.path.join(REPO_ROOT, 'sublayers_site')
-TEST_DB = 'mongodb://localhost/rd_integration_test'
+# Matches docker-compose.yml's mongodb service, which requires auth - a bare
+# "mongodb://localhost/..." 404s every spawned server with "OperationFailure:
+# requires authentication" against that container. Override via env if you
+# run a separate, unauthed test-only mongod instead.
+TEST_DB = os.environ.get(
+    'TEST_MONGODB_URL',
+    'mongodb://admin:admin_password@localhost/rd_integration_test?authSource=admin',
+)
+_MONGO_AUTH = dict(username='admin', password='admin_password', authSource='admin')
 
 # Запуск engine-сервера: загрузка мирового реестра занимает десятки секунд
 ENGINE_START_TIMEOUT = 180
@@ -68,7 +76,7 @@ def mongo():
     # подчистить тестовую базу
     try:
         import pymongo
-        client = pymongo.MongoClient('localhost', 27017, serverSelectionTimeoutMS=2000)
+        client = pymongo.MongoClient('localhost', 27017, serverSelectionTimeoutMS=2000, **_MONGO_AUTH)
         client.drop_database('rd_integration_test')
         client.close()
     except Exception:
