@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import asyncio
 import logging
 log = logging.getLogger(__name__)
 
@@ -8,7 +9,6 @@ from sublayers_server.model.vectors import Point
 from sublayers_server.model.registry_me.tree import Position
 
 import tornado.web
-import tornado.gen
 
 from tornado.options import options
 from collections import Counter
@@ -92,8 +92,7 @@ class PlayHandler(BaseHandler):
             self.user_lang = user_lang
 
 
-    @tornado.gen.coroutine
-    def get(self):
+    async def get(self):
         # Редирект для переезда
         log.debug('### engine/play:: host={self.request.host}; uri={self.request.uri}; path={self.request.path}; query={self.request.query}'.format(**locals()))
         if self.request.host == 'roaddogs.ru':
@@ -119,7 +118,7 @@ class PlayHandler(BaseHandler):
 
         _time_to_sleep = self._frequency_delay(user_id)
         if _time_to_sleep:
-            yield tornado.gen.sleep(_time_to_sleep)
+            await asyncio.sleep(_time_to_sleep)
             log.debug(
                 'Ok. User %r is waked up after %ss %s',
                 user_id,
