@@ -18,6 +18,17 @@ server {
     listen 80;
     server_name _;
 
+    # Docker DNS: resolve backend container names per-request instead of once
+    # at nginx startup. A bare `proxy_pass http://game-engine:8000/` resolves
+    # game-engine's IP once when nginx boots and caches it for the process
+    # lifetime - recreating that container (redeploy, restart) leaves nginx
+    # proxying to a dead IP (404/502) until nginx itself is also restarted.
+    # Routing through a variable forces nginx to re-resolve on every request.
+    resolver 127.0.0.11 valid=10s;
+    set $site_upstream http://${SITE_HOST}:${SITE_PORT};
+    set $quick_upstream http://${QUICK_HOST}:${QUICK_PORT};
+    set $game_upstream http://${GAME_ENGINE_HOST}:${GAME_ENGINE_PORT};
+
     # Map tiles. URL convention: /map/{layer}/{z}/{x}/{y}.png ->
     # sublayers_world/tiles/map/{layer}/{z}/{x}/{y}.png (mounted at /srv/world_tiles/map).
     location ^~ /map/ {
@@ -44,7 +55,7 @@ server {
 
     # Site server: landing page + auth
     location = / {
-        proxy_pass http://${SITE_HOST}:${SITE_PORT}/;
+        proxy_pass $site_upstream/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -54,7 +65,7 @@ server {
     }
 
     location ~ ^/(login|logout|email_confirm|get_user_info)$ {
-        proxy_pass http://${SITE_HOST}:${SITE_PORT};
+        proxy_pass $site_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -64,7 +75,7 @@ server {
     }
 
     location /site_api/ {
-        proxy_pass http://${SITE_HOST}:${SITE_PORT}/site_api/;
+        proxy_pass $site_upstream/site_api/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -75,7 +86,7 @@ server {
 
     # Quick engine: tutorial / fast-respawn mode
     location = /quick/ws {
-        proxy_pass http://${QUICK_HOST}:${QUICK_PORT}/ws;
+        proxy_pass $quick_upstream/ws;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -85,7 +96,7 @@ server {
     }
 
     location /quick/ {
-        proxy_pass http://${QUICK_HOST}:${QUICK_PORT}/;
+        proxy_pass $quick_upstream/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
@@ -93,7 +104,7 @@ server {
 
     # Main game engine (basic mode): WebSocket + catch-all
     location = /ws {
-        proxy_pass http://${GAME_ENGINE_HOST}:${GAME_ENGINE_PORT};
+        proxy_pass $game_upstream;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "upgrade";
@@ -103,7 +114,7 @@ server {
     }
 
     location / {
-        proxy_pass http://${GAME_ENGINE_HOST}:${GAME_ENGINE_PORT}/;
+        proxy_pass $game_upstream/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
