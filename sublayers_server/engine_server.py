@@ -78,20 +78,6 @@ class Application(BaseApplication):
         settings.setdefault('static_path', options.static_path)
         settings.setdefault('ui_modules', uimodules)
         settings.setdefault('login_url', "/login")
-        settings.setdefault('google_oauth', {
-            "key": "106870863695-ofsuq4cf087mj5n83s5h8mfknnudkm4k.apps.googleusercontent.com",
-            "secret": "JOXGxpPxKGqr_9TYW9oYT8g_",
-        })
-        settings.setdefault('ok_oauth', {
-            "key": "1137609984",
-            "secret": "BB413D7F8E6B685D19AE3FE0",
-            "public_key": "CBAOIPMEEBABABABA",
-        })
-        settings.setdefault('vk_oauth', {
-            "key": "4926489",
-            "secret": "4gyveXhKv5aVNCor5bkB",
-        })
-        # todo: Убрать ключи из кода
 
         super(Application, self).__init__(
             handlers=handlers, default_host=default_host, transforms=transforms, **settings)

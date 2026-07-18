@@ -91,6 +91,9 @@ services:
     working_dir: /app/sublayers_server
     environment:
       - GAME_ENGINE_PORT=${GAME_ENGINE_PORT:-8000}
+      # Must match site-server's COOKIE_SECRET - both read/write the same
+      # secure "user" cookie. See sublayers_server/settings.py.
+      - COOKIE_SECRET=${COOKIE_SECRET:?COOKIE_SECRET must be set in .env}
     command: >
       python engine_server.py --mode=basic
       --port=${GAME_ENGINE_PORT:-8000}
@@ -112,6 +115,11 @@ services:
     container_name: rd_site_server
     restart: unless-stopped
     working_dir: /app/sublayers_site
+    environment:
+      # Must match game-engine's COOKIE_SECRET - both read/write the same
+      # secure "user" cookie. See sublayers_site/settings.py.
+      - COOKIE_SECRET=${COOKIE_SECRET:?COOKIE_SECRET must be set in .env}
+      - FORUM_COOKIE_SECRET=${FORUM_COOKIE_SECRET:-}
     command: >
       python site_server.py
       --port=${SITE_PORT:-8001}
@@ -131,6 +139,9 @@ services:
     container_name: rd_quick_engine
     restart: unless-stopped
     working_dir: /app/sublayers_server
+    environment:
+      # Same secure "user" cookie mechanism as game-engine/site-server.
+      - COOKIE_SECRET=${COOKIE_SECRET:?COOKIE_SECRET must be set in .env}
     command: >
       python engine_server_quick.py --mode=quick
       --port=${QUICK_PORT:-8005}

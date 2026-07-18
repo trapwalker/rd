@@ -9,7 +9,9 @@ import tornado.ioloop
 import tornado.options
 import tornado.web
 import tornado.websocket
+import os
 import os.path
+import secrets
 from tornado.options import define, options
 
 from model.editor_server import EditorServer
@@ -32,7 +34,11 @@ class Application(tornado.web.Application):
             (r"/ws", ClientSocketHandler),
         ]
         settings = dict(
-            cookie_secret="DxlHE6Da0NEVpSqtboSeaEntH5F7Yc2e",
+            # No fixed default on purpose - this was a hardcoded secret
+            # committed to a public repo. Set EDITOR_COOKIE_SECRET to keep
+            # sessions stable across restarts; otherwise a fresh one is
+            # generated each run (editor sessions just won't persist).
+            cookie_secret=os.environ.get('EDITOR_COOKIE_SECRET') or secrets.token_hex(32),
             template_path=os.path.join(os.path.dirname(__file__), "templates"),
             static_path=os.path.join(os.path.dirname(__file__), "static"),
             xsrf_cookies=True,

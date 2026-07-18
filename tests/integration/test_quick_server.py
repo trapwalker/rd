@@ -8,7 +8,7 @@ import sys
 import pytest
 
 from tests.integration.conftest import (
-    ENGINE_DIR, REPO_ROOT, TEST_DB, LegacyClient, _free_port, _wait_http,
+    ENGINE_DIR, REPO_ROOT, TEST_DB, SUBPROCESS_ENV, LegacyClient, _free_port, _wait_http,
 )
 
 
@@ -23,7 +23,7 @@ def quick_server(mongo, tmp_path_factory):
     proc = subprocess.Popen(
         [sys.executable, 'engine_server_quick.py',
          '--mode=quick', '--port={}'.format(port), '--db={}'.format(TEST_DB)],
-        cwd=ENGINE_DIR, stdout=log_file, stderr=subprocess.STDOUT,
+        cwd=ENGINE_DIR, stdout=log_file, stderr=subprocess.STDOUT, env=SUBPROCESS_ENV,
     )
     try:
         _wait_http(port, '/login', proc=proc)

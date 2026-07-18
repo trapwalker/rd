@@ -9,6 +9,7 @@ localhost:27017 и полные данные мира (sublayers_world) — ин
 """
 
 import os
+import secrets
 import socket
 import subprocess
 import sys
@@ -20,6 +21,13 @@ import pytest
 REPO_ROOT = os.path.normpath(os.path.join(os.path.dirname(__file__), '../..'))
 ENGINE_DIR = os.path.join(REPO_ROOT, 'sublayers_server')
 SITE_DIR = os.path.join(REPO_ROOT, 'sublayers_site')
+# engine_server.py / engine_server_quick.py / site_server.py all fall back to
+# a random per-process cookie_secret if COOKIE_SECRET isn't set (see
+# sublayers_server/settings.py) - fine standalone, but these tests span
+# multiple spawned server processes that need to read/write the *same*
+# secure "user" cookie, so pin one value for all of them here.
+TEST_COOKIE_SECRET = secrets.token_hex(32)
+SUBPROCESS_ENV = dict(os.environ, COOKIE_SECRET=TEST_COOKIE_SECRET)
 # Matches docker-compose.yml's mongodb service, which requires auth - a bare
 # "mongodb://localhost/..." 404s every spawned server with "OperationFailure:
 # requires authentication" against that container. Override via env if you
@@ -95,7 +103,7 @@ def engine_server(mongo, tmp_path_factory):
     proc = subprocess.Popen(
         [sys.executable, 'engine_server.py',
          '--mode=basic', '--port={}'.format(port), '--db={}'.format(TEST_DB)],
-        cwd=ENGINE_DIR, stdout=log_file, stderr=subprocess.STDOUT,
+        cwd=ENGINE_DIR, stdout=log_file, stderr=subprocess.STDOUT, env=SUBPROCESS_ENV,
     )
     try:
         _wait_http(port, '/login', proc=proc)
@@ -119,7 +127,7 @@ def site_server(mongo, tmp_path_factory):
     proc = subprocess.Popen(
         [sys.executable, 'site_server.py',
          '--port={}'.format(port), '--db={}'.format(TEST_DB)],
-        cwd=SITE_DIR, stdout=log_file, stderr=subprocess.STDOUT,
+        cwd=SITE_DIR, stdout=log_file, stderr=subprocess.STDOUT, env=SUBPROCESS_ENV,
     )
     try:
         _wait_http(port, '/', timeout=SITE_START_TIMEOUT, proc=proc)

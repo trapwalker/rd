@@ -5,6 +5,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+import secrets
 import tornado.options
 from tornado.options import define
 
@@ -39,7 +40,18 @@ define("logging_calls", default=False, help="Logging calss marked with `call_log
 
 define("service_name", default="sl", help="Game server service name", type=str)
 
-define("cookie_secret", help="cookie secret key", type=str)
+define(
+    "cookie_secret",
+    # Never None: an unset/empty cookie_secret breaks Tornado's secure-cookie
+    # and XSRF machinery in ways that don't fail loudly (mismatched tokens,
+    # not a crash). Falls back to a fresh random value per process if
+    # COOKIE_SECRET isn't set - fine for a single isolated process, but
+    # game-engine/quick-engine/site-server must share the SAME value (they
+    # read/write the same "user" cookie) so set COOKIE_SECRET explicitly
+    # whenever more than one of them talks to the same clients.
+    default=os.environ.get("COOKIE_SECRET") or secrets.token_hex(32),
+    help="cookie secret key", type=str,
+)
 define("static_path", default=_rel("../sublayers_common/static"), help="path to static files", type=str)
 define("mobile_host", default="roaddogs.ru", help="mobile host adress", type=str)
 define("template_path", default=_rel("templates"), help="path to static files", type=str)

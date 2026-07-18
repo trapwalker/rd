@@ -258,9 +258,11 @@ if __name__ == '__main__':
     from uuid import uuid4
     import datetime
     et = email_confirmation_template_en
-    get_sender()
 
-    with get_sender(server='smtp.yandex.ru:587', login='info@roaddogs.ru', password='gdvyaavuccekawoj') as sender:
+    # Manual smoke test: reads server/login/password from options (the
+    # site_server.conf / local.site_server.conf mechanism), same as every
+    # real call site - pass --email_server/--email_login/--email_password
+    # on the command line if running this file standalone outside a
+    # configured server process.
+    with get_sender() as sender:
         print(et(adr_to="svpmailbox@gmail.com", token=uuid4().hex).send(sender))
-        #print(e.send("SergyP@yandex.ru"))
-        #print(e.send("was73r@gmail.com"))

@@ -4,6 +4,7 @@ import logging
 log = logging.getLogger(__name__)
 
 import os
+import secrets
 import tornado.options
 from tornado.options import define
 
@@ -34,8 +35,14 @@ def _rel(*folders):
 
 define("debug", default=False, help="Debug mode flag", type=bool)
 define("logging_calls", default=False, help="Logging calss marked with `call_log` decorator", type=bool)
-define("cookie_secret", help="cookie secret key", type=str)
-define("forum_cookie_secret", help="cookie secret key", type=str)
+define(
+    "cookie_secret",
+    # Never None - see sublayers_server/settings.py's identical comment.
+    # Must match game-engine/quick-engine's value when they share clients.
+    default=os.environ.get("COOKIE_SECRET") or secrets.token_hex(32),
+    help="cookie secret key", type=str,
+)
+define("forum_cookie_secret", default=os.environ.get("FORUM_COOKIE_SECRET") or secrets.token_hex(32), help="cookie secret key", type=str)
 define("static_path", default=_rel("../sublayers_common/static"), help="path to static files", type=str)
 define("template_path", default=_rel("templates"), help="path to static files", type=str)
 define("pidfile", default=None, help="filename for pid store", type=str)
