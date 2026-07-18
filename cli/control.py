@@ -18,10 +18,6 @@ import requests
 import subprocess
 
 
-def service_start(project_path, service_command, stdout_show_timeout=None):
-    pass
-
-
 @root.group(name='save', invoke_without_command=True)
 @click.option('--host' ,'-h', 'host', default='http://localhost:8000', type=click.STRING, help='Host to send the command')
 @click.pass_context
