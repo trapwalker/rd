@@ -78,6 +78,8 @@ sublayers_common/static/locale/*/yaml/*/.compiled.js
 .env
 .env.local
 
-# macOS / tooling artifacts
+# macOS / Windows / tooling artifacts
 .DS_Store
+desktop.ini
+Thumbs.db
 .playwright-mcp/
