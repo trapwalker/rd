@@ -77,3 +77,7 @@ sublayers_common/static/locale/*/yaml/*/.compiled.js
 # Environment
 .env
 .env.local
+
+# macOS / tooling artifacts
+.DS_Store
+.playwright-mcp/
