@@ -127,7 +127,12 @@ server {
     }
 
     location / {
-        proxy_pass $game_upstream/;
+        # See /site_api/ above: proxy_pass with a variable disables nginx's
+        # usual location-prefix rewrite, so no literal suffix here either -
+        # the original request URI is passed through unchanged, which is
+        # what game-engine's own routes (/play, /ws, /api/... - no prefix
+        # stripping needed) expect.
+        proxy_pass $game_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $remote_addr;
