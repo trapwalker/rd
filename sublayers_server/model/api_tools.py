@@ -153,6 +153,8 @@ class API(object):
         try:
             # параметр encoding у json.loads удалён в Python 3.9
             call_info = json.loads(message)
+            if not isinstance(call_info, dict):
+                raise ValueError('Expected a JSON object, got {}'.format(type(call_info).__name__))
         except Exception as e:
             msg = "Can't parse JSON message {!r}: {!r}".format(message, e)
             log.error(msg)

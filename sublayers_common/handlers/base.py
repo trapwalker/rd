@@ -101,6 +101,11 @@ class AuthHandlerMixin(TimeMeasuredHandler):
 class BaseHandler(AuthHandlerMixin):
     def _quick_registration(self):
         qg_car_index = self.get_argument('qg_car_index', 0)
+        try:
+            qg_car_index = int(qg_car_index)
+        except (TypeError, ValueError):
+            log.warning('Non-numeric qg_car_index: %r', qg_car_index)
+            qg_car_index = 0
         nickname = self.get_argument('username', 'mobile_user')
         if self.current_user:
             quick_user = self.current_user if self.current_user.quick else None
