@@ -55,6 +55,11 @@ RUN uv pip install --system -r pyproject.toml
 # Copy application code
 COPY app ./app
 COPY sublayers_common ./sublayers_common
+# Every app/routers/*.py that renders HTML uses Jinja2Templates(directory="templates")
+# - a relative path resolved against the process CWD, not app/templates. Omitting
+# this left every HTML-rendering route in the production image throwing
+# TemplateNotFound.
+COPY templates ./templates
 
 
 # Production stage
@@ -74,6 +79,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 # Copy application code
 COPY --from=builder /app/app ./app
 COPY --from=builder /app/sublayers_common ./sublayers_common
+COPY --from=builder /app/templates ./templates
 
 # Create non-root user
 RUN useradd -m -u 1000 appuser && \
