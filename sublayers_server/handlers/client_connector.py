@@ -87,6 +87,14 @@ class AgentSocketHandler(tornado.websocket.WebSocketHandler, BaseHandler):
 
     def on_message(self, message):
         # log.debug("Got message from %s: %r", self.agent, message)
+        if self.agent is None:
+            # open() leaves the socket connected (no self.close()) when agent
+            # lookup fails - see the "Agent not found" branch above - so a
+            # message arriving on such a connection would otherwise crash
+            # here with AttributeError on every call.
+            log.warning('Message on agent-less connection %r, closing', self)
+            self.close(reason='No agent')
+            return
         result = self.agent.api.__rpc_call__(message)
         self.send(result)
 
