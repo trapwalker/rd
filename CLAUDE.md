@@ -222,7 +222,20 @@ The project uses Git (converted from Mercurial - note `.hgignore` and `hgapi` us
 ## Python 2 to 3 Migration
 
 The codebase is undergoing migration from Python 2 to Python 3. Watch for:
-- `from __future__ import` statements
 - `unicode` type usage (Python 2)
 - `.decode('cp1251')` for Windows encoding
 - Print statements vs print functions
+- `from __future__ import` statements were removed repo-wide (all were pure
+  no-ops under Python 3.12) - a new one showing up in a diff means someone
+  pasted in old code, not that it's needed
+- Raw pymongo `Collection` API calls (`.insert()`, `.remove()`, `.update()`,
+  `.count()`) - all removed in pymongo 4.x (this project pins 4.x). These
+  crash with `TypeError: 'Collection' object is not callable` or similar,
+  not an import error, so they're easy to miss until actually exercised at
+  runtime - e.g. `sublayers_server/model/agents.py`'s
+  `_add_quick_game_record` silently broke the quick-mode leaderboard this
+  way for a while. Use `.insert_one()`/`.insert_many()`,
+  `.delete_one()`/`.delete_many()`, `.update_one()`/`.update_many()`,
+  `.count_documents({})` instead. This doesn't apply to MongoEngine
+  `QuerySet`s (`Model.objects.count()` etc.), which still support the old
+  method names as part of its own stable API.
